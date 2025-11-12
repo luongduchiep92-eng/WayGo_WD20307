@@ -1,6 +1,6 @@
 <?php
 
-define('BASE_URL',          'http://localhost/hoc_lai_PHP1/BASEMVC/');
+define('BASE_URL',          'http://localhost/WD20307_WayGo/');
 
 define('PATH_ROOT',         __DIR__ . '/../');
 
@@ -22,7 +22,7 @@ define('DB_HOST',     'localhost');
 define('DB_PORT',     '3306');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
-define('DB_NAME',     'shop_phu_kien');
+define('DB_NAME',     '');
 define('DB_OPTIONS', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
