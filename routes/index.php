@@ -1,16 +1,16 @@
 <?php
-session_start();
+// session_start();
 
-if (!isset($_SESSION['role'])) {
-    (new LoginController())->login();
-    exit;
-}
+// if (!isset($_SESSION['role'])) {
+//     (new LoginController())->login();
+//     exit;
+// }
 
-$role = $_SESSION['role'];
+// $role = $_SESSION['role'] ?? 'tour_list';
 $action = $_GET['action'] ?? '/';
 
-if ($role === 'admin') {
-    $controller = new TourController();
+// if ($role === 'admin') {
+//     $controller = new TourController();
 
     match ($action) {
         '/', 'tour_list' => (new TourController())->listTour(),
@@ -22,14 +22,14 @@ if ($role === 'admin') {
         'hdv_detail' => (new TourController())->detailHDV(),
         default => (new TourController())->listTour(),
     };
-}
-elseif ($role === 'hdv') {
-    $controller = new HuongDanVienController();
+// }
+// elseif ($role === 'hdv') {
+//     $controller = new HuongDanVienController();
 
-    match ($action) {
-        default => $controller->index(),
-    };
-}
-else {
-    echo "Bạn không có quyền truy cập!";
-}
+//     match ($action) {
+//         default => $controller->index(),
+//     };
+// }
+// else {
+//     echo "Bạn không có quyền truy cập!";
+// }
