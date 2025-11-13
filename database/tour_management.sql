@@ -96,3 +96,53 @@ INSERT INTO tour_hdv (tour_id, hdv_id) VALUES
 (8, 8),
 (9, 4),
 (10, 9);
+
+CREATE TABLE tour_schedule_days (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    ngay_thu INT NOT NULL,
+    tieu_de VARCHAR(255),
+    mo_ta TEXT,
+    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tour_schedule_activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    day_id INT NOT NULL,
+    thoi_gian_bat_dau TIME,
+    thoi_gian_ket_thuc TIME,
+    dia_diem VARCHAR(255),
+    hoat_dong TEXT,
+    hinh_anh VARCHAR(255),
+    FOREIGN KEY (day_id) REFERENCES tour_schedule_days(id) ON DELETE CASCADE
+);
+
+
+-- - Ngày 1: Khám phá trung tâm Đà Lạt
+INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
+VALUES (1, 1, 'Khám phá trung tâm Đà Lạt', 'Tham quan các điểm nổi tiếng và thưởng thức ẩm thực Đà Lạt.');
+
+INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh) VALUES
+(1, '08:00:00', '10:00:00', 'Thung lũng Tình Yêu', 'Tham quan và chụp ảnh tại Thung lũng Tình Yêu', 'uploads/tours/dalat1.jpg'),
+(1, '10:30:00', '12:00:00', 'Nhà hàng Cơm Niêu Đà Lạt', 'Dùng bữa trưa tại nhà hàng địa phương', NULL),
+(1, '13:30:00', '15:00:00', 'Quán Cafe Mê Linh', 'Thưởng thức cà phê và ngắm cảnh hồ Tuyền Lâm', NULL),
+(1, '16:00:00', '18:00:00', 'Chợ đêm Đà Lạt', 'Dạo chợ đêm và mua sắm đặc sản địa phương', 'uploads/tours/dalat3.jpg');
+
+--  Ngày 2: Langbiang – Vườn hoa Đà Lạt
+INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
+VALUES (1, 2, 'Khám phá vùng ven Đà Lạt', 'Tham quan Langbiang, vườn hoa Đà Lạt và hồ Xuân Hương.');
+
+INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh) VALUES
+(2, '08:00:00', '10:30:00', 'Núi Langbiang', 'Leo núi và ngắm toàn cảnh Đà Lạt', NULL),
+(2, '11:00:00', '12:30:00', 'Nhà hàng Hoa Đà Lạt', 'Dùng bữa trưa tại nhà hàng địa phương', NULL),
+(2, '13:30:00', '16:00:00', 'Vườn hoa Thành phố', 'Tham quan và chụp ảnh tại vườn hoa nổi tiếng', NULL),
+(2, '18:30:00', '20:00:00', 'Nhà hàng Memory', 'Thưởng thức bữa tối và nghe nhạc acoustic', NULL);
+
+--  Ngày 3: Tự do tham quan và mua sắm
+INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
+VALUES (1, 3, 'Tự do tham quan và mua sắm', 'Mua quà lưu niệm, nghỉ ngơi trước khi về.');
+
+INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh) VALUES
+(3, '08:00:00', '11:00:00', 'Chợ Đà Lạt', 'Tự do mua sắm đặc sản và quà lưu niệm', NULL),
+(3, '11:30:00', '13:00:00', 'Nhà hàng Hương Rừng', 'Dùng bữa trưa trước khi về', NULL),
+(3, '13:30:00', '15:00:00', 'Khách sạn', 'Thu dọn hành lý và trả phòng', NULL);
