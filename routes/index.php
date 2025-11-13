@@ -21,6 +21,8 @@ $action = $_GET['action'] ?? '/';
         'hdv_list' => (new HuongDanVienController())->listHDV(),
         'hdv_add' => (new HuongDanVienController())->addHDV(),
         'hdv_detail' => (new HuongDanVienController())->detailHDV(),
+        'hdv_edit' => (new HuongDanVienController())->editHDV(),
+        'hdv_delete' => (new HuongDanVienController())->deleteHDV(),
         default => (new TourController())->listTour(),
     };
 // }
