@@ -25,13 +25,13 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="index.php?controller=tour&action=list">
-            <i class="fa-solid fa-map"></i> Quản lý Tour
+          <a class="nav-link" href="<?= BASE_URL . '?action=tour_list';?>">
+            <i class="fa-solid fa-map"></i> Quản lý danh sách tour
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="index.php?controller=user&action=list">
-            <i class="fa-solid fa-users"></i> Người dùng
+          <a class="nav-link" href="<?= BASE_URL . '?action=hdv_list';?>">
+            <i class="fa-solid fa-users"></i> Quản lý HDV
           </a>
         </li>
       </ul>

@@ -22,10 +22,10 @@
                 <td><?= $tour->ten_tour ?></td>
                 <td><?= number_format($tour->gia_tour) ?> VND</td>
                 <td><?= $tour->loai_tour ?></td>
-                <td class="action-links">
-                    <a href="<?= BASE_URL . '?action=tour_edit&id=' . $tour->id ?>">Sửa</a> |
-                    <a href="<?= BASE_URL . '?action=tour_detail&id=' . $tour->id ?>">Chi tiết</a> |
-                    <a href="<?= BASE_URL . '?action=tour_delete&id=' . $tour->id ?> " 
+                <td>
+                    <a href="<?= BASE_URL . '?action=tour_edit&id=' . $tour->id ?>" class="btn btn-sm btn-warning">Sửa</a>
+                    <a href="<?= BASE_URL . '?action=tour_detail&id=' . $tour->id ?>"  class="btn btn-sm btn-info">Chi tiết</a>
+                    <a href="<?= BASE_URL . '?action=tour_delete&id=' . $tour->id ?> "  class="btn btn-sm btn-danger"
                             onclick="return confirm('Bạn có chắc chắn muốn xóa không?')">Xóa</a>
                 </td>
             </tr>
