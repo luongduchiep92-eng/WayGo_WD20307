@@ -11,7 +11,6 @@
         <tr>
             <th>ID</th>
             <th>Tên tour</th>
-            <th>Hình ảnh</th>
             <th>Giá tour</th>
             <th>Loại tour</th>
             <th>Thao tác</th>
@@ -21,14 +20,13 @@
             <tr>
                 <td><?= $tour->id ?></td>
                 <td><?= $tour->ten_tour ?></td>
-                <td>
-                    <img src="<?= BASE_ASSETS_UPLOADS . $tour->image_path ?>" width="60" alt="">
-                </td>
                 <td><?= number_format($tour->gia_tour) ?> VND</td>
                 <td><?= $tour->loai_tour ?></td>
                 <td class="action-links">
-                    <a href="<?= BASE_URL . '?action=tour-edit&id=' . $tour->id ?>">Sửa</a> |
-                    <a href="<?= BASE_URL . '?action=tour-detail&id=' . $tour->id ?>">Chi tiết</a>
+                    <a href="<?= BASE_URL . '?action=tour_edit&id=' . $tour->id ?>">Sửa</a> |
+                    <a href="<?= BASE_URL . '?action=tour_detail&id=' . $tour->id ?>">Chi tiết</a> |
+                    <a href="<?= BASE_URL . '?action=tour_delete&id=' . $tour->id ?> " 
+                            onclick="return confirm('Bạn có chắc chắn muốn xóa không?')">Xóa</a>
                 </td>
             </tr>
         <?php endforeach; ?>

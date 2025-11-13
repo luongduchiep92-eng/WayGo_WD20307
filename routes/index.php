@@ -17,6 +17,7 @@ $action = $_GET['action'] ?? '/';
         'tour_add' => (new TourController())->addTour(),
         'tour_detail' => (new TourController())->detailTour(),
         'tour_edit' => (new TourController())->editTour(),
+        'tour_delete' => (new TourController())->deleteTour(),
         'hdv_list' => (new TourController())->listHDV(),
         'hdv_add' => (new TourController())->addHDV(),
         'hdv_detail' => (new TourController())->detailHDV(),
