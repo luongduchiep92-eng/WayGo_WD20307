@@ -1,0 +1,93 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    letter-spacing: 1px;
+}
+
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+/* ====== GIAO DIỆN DANH SÁCH TOUR ====== */
+.tour-container {
+    padding: 30px;
+    background-color: #f8f9fa;
+    min-height: 80vh;
+}
+
+.tour-container h1 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Link tạo mới */
+.add-tour-btn {
+    display: inline-block;
+    background-color: #0d6efd;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: 0.2s;
+    margin-bottom: 15px;
+}
+.add-tour-btn:hover {
+    background-color: #0b5ed7;
+}
+
+/* Bảng danh sách tour */
+.tour-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tour-table th {
+    background-color: #343a40;
+    color: #fff;
+    text-align: left;
+    padding: 12px;
+    font-weight: 600;
+}
+
+.tour-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.tour-table tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* Ảnh trong bảng */
+.tour-table img {
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Action links */
+.action-links a {
+    text-decoration: none;
+    font-weight: 500;
+    margin: 0 6px;
+    color: #0d6efd;
+    transition: 0.2s;
+}
+
+.action-links a:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
