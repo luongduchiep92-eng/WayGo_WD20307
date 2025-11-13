@@ -1,20 +1,35 @@
 <?php
+// session_start();
 
-// $action = $_GET['action'] ?? '/';
-
-// $role = $_GET['role'] ?? 'product-list';
-
-// if($role === 'admin'){
-//     if ($role === 'admin') {
-//     match ($action) {
-//         // 'product-list', 'list', '/' => (new ProductController())->list(),
-        
-//     };
+// if (!isset($_SESSION['role'])) {
+//     (new LoginController())->login();
+//     exit;
 // }
 
-// }else
+// $role = $_SESSION['role'] ?? 'tour_list';
+$action = $_GET['action'] ?? '/';
+
+// if ($role === 'admin') {
+//     $controller = new TourController();
+
+    match ($action) {
+        '/', 'tour_list' => (new TourController())->listTour(),
+        'tour_add' => (new TourController())->addTour(),
+        'tour_detail' => (new TourController())->detailTour(),
+        'tour_edit' => (new TourController())->editTour(),
+        'hdv_list' => (new TourController())->listHDV(),
+        'hdv_add' => (new TourController())->addHDV(),
+        'hdv_detail' => (new TourController())->detailHDV(),
+        default => (new TourController())->listTour(),
+    };
+// }
+// elseif ($role === 'hdv') {
+//     $controller = new HuongDanVienController();
+
 //     match ($action) {
-//         // '/' => (new HomeController)->index(),
-
+//         default => $controller->index(),
 //     };
-
+// }
+// else {
+//     echo "Bạn không có quyền truy cập!";
+// }

@@ -10,5 +10,4 @@
             $stmt->setFetchMode(PDO::FETCH_OBJ);
             return $stmt->fetchAll();
         }
-        
     }
