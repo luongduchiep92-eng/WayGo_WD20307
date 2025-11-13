@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php require_once "views/layouts/header.php"; ?>
 
 <div class="tour-container">
@@ -36,3 +37,4 @@
 </div>
 
 <?php require_once "views/layouts/footer.php"; ?>
+
