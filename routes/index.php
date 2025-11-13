@@ -18,9 +18,9 @@ $action = $_GET['action'] ?? '/';
         'tour_detail' => (new TourController())->detailTour(),
         'tour_edit' => (new TourController())->editTour(),
         'tour_delete' => (new TourController())->deleteTour(),
-        'hdv_list' => (new TourController())->listHDV(),
-        'hdv_add' => (new TourController())->addHDV(),
-        'hdv_detail' => (new TourController())->detailHDV(),
+        'hdv_list' => (new HuongDanVienController())->listHDV(),
+        'hdv_add' => (new HuongDanVienController())->addHDV(),
+        'hdv_detail' => (new HuongDanVienController())->detailHDV(),
         default => (new TourController())->listTour(),
     };
 // }
