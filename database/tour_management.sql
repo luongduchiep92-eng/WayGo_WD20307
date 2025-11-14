@@ -1,4 +1,4 @@
-CREATE DATABASE tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- CREATE DATABASE tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE tour_management;
 
 CREATE TABLE tours (
@@ -146,3 +146,25 @@ INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_t
 (3, '08:00:00', '11:00:00', 'Chợ Đà Lạt', 'Tự do mua sắm đặc sản và quà lưu niệm', NULL),
 (3, '11:30:00', '13:00:00', 'Nhà hàng Hương Rừng', 'Dùng bữa trưa trước khi về', NULL),
 (3, '13:30:00', '15:00:00', 'Khách sạn', 'Thu dọn hành lý và trả phòng', NULL);
+
+-- quản lý nhà cung cấp
+CREATE TABLE suppliers ( 
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    address VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO suppliers (name, phone, email, address)
+VALUES
+('Công ty Du Lịch Việt', '0909123456', 'contact@dulichviet.com', '123 Nguyễn Trãi, Quận 1, TP.HCM'),
+('Saigon Tourist', '0911222333', 'info@saigontourist.vn', '45 Lê Lợi, Quận 1, TP.HCM'),
+('Vietnam Travel Group', '0988777666', 'support@vietnamtravel.com', '98 Trần Hưng Đạo, Hoàn Kiếm, Hà Nội'),
+('Hà Nội Tourist', '0933445566', 'sales@hanoitourist.vn', '12 Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội'),
+('Asia Tour Service', '0977112233', 'booking@asiatour.com', '56 Võ Văn Tần, Quận 3, TP.HCM'),
+('Fiditour Travel', '0908112233', 'info@fiditour.com', '129 Nguyễn Huệ, Quận 1, TP.HCM'),
+('Bến Thành Tourist', '0933778899', 'contact@benthanhtourist.vn', '86 Nguyễn Trãi, Quận 1, TP.HCM'),
+('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
+('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
+('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
