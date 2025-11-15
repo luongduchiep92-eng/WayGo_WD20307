@@ -1,6 +1,6 @@
 <?php
 
-define('BASE_URL',          'http://localhost/WayGo_WD20307/');
+define('BASE_URL',          'http://localhost/WD20307_WayGo/');
 
 define('PATH_ROOT',         __DIR__ . '/../');
 
