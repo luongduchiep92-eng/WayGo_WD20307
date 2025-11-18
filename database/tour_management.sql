@@ -221,7 +221,9 @@ UPDATE suppliers SET rating = 4 WHERE id = 7;
 UPDATE suppliers SET rating = 5 WHERE id = 8;
 UPDATE suppliers SET rating = 4 WHERE id = 9;
 -- bảng tour_supplier (các tour thuộc quyền quản lý của supplier nào)
-CREATE TABLE tours_supplier  (
+
+
+CREATE TABLE tours_supperlisers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     duration VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
@@ -232,5 +234,3 @@ CREATE TABLE tours_supplier  (
         REFERENCES suppliers(id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
-);
--- chưa có dữ liệu
