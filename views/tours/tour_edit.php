@@ -98,7 +98,7 @@
         <?php endif; ?>
 
         <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-        <a href="index.php?action=tour_detail&id=<?= $tour->id ?>" class="btn btn-secondary">Hủy</a>
+        <a href="index.php?action=tour_list<?= $tour->id ?>" class="btn btn-secondary">Hủy</a>
     </form>
 </div>
 
