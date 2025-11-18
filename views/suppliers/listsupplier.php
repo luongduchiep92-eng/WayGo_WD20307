@@ -20,136 +20,177 @@
                 <td><?= $s['email'] ?></td>
                 <td><?= $s['address'] ?></td>
                 <td>
-                    <a href="index.php?controller=supplier&action=editsupplier&id=<?= $s['id'] ?>" class="btn-action btn-edit">Sửa</a>
-                    <br>
-                    <br>
-                    <a href="index.php?controller=supplier&action=detailsupplier&id=<?= $s['id'] ?>" class="btn btn-info btn-sm">Xem chi tiết</a>
-                    <br> <br>
-                    <a class="btn btn-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')" href="index.php?controller=supplier&action=deletesupplier&id=<?= $s['id'] ?>">Xóa</a>
+                    <div class="action-buttons">
+                        <a href="index.php?controller=supplier&action=editsupplier&id=<?= $s['id'] ?>" class="btn-action btn-edit">Sửa</a>
+                        <a href="index.php?controller=supplier&action=detailsupplier&id=<?= $s['id'] ?>" class="btn btn-info btn-sm">Chi tiết</a>
+                        <a href="index.php?controller=supplier&action=deletesupplier&id=<?= $s['id'] ?>" class="btn btn-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')">Xóa</a>
+                    </div>
                 </td>
+
+
             </tr>
         <?php endforeach; ?>
     </table>
 </div>
 
 \<style>
-    /* Container tổng */
-    .container-supplier {
-        max-width: 1000px;
-        margin: 40px auto;
-        padding: 30px;
-        background: #f9f9f9;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* ====== FONT CHO TOÀN TRANG ====== */
+    body {
+        font-family: 'Inter', 'Segoe UI', 'Tahoma', sans-serif;
+        color: #333;
+        background: #f4f6f8;
     }
 
-    /* Tiêu đề */
+    /* ====== CONTAINER ====== */
+    .container-supplier {
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ====== TITLE ====== */
     .container-supplier h2 {
         text-align: center;
-        margin-bottom: 30px;
-        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 32px;
         font-weight: 700;
-        font-size: 28px;
-        letter-spacing: 1px;
+        color: #1d3557;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        line-height: 1.2;
     }
 
-    /* Link thêm mới */
-    .container-supplier a.add-btn {
+    /* ====== ADD BUTTON ====== */
+    .container-supplier .add-btn {
         display: inline-block;
-        margin-bottom: 20px;
-        padding: 10px 20px;
-        background: #3498db;
+        padding: 12px 22px;
+        background: #457b9d;
         color: #fff;
+        border-radius: 10px;
         text-decoration: none;
-        border-radius: 8px;
-        transition: 0.3s;
+        margin-bottom: 20px;
+        font-size: 15px;
         font-weight: 600;
+        transition: 0.25s ease;
     }
 
-    .container-supplier a.add-btn:hover {
-        background: #2980b9;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    .container-supplier .add-btn:hover {
+        background: #1d3557;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
     }
 
-    /* Bảng */
+    /* ====== TABLE ====== */
     .container-supplier table {
         width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        font-size: 15px;
     }
 
-    /* Header bảng */
     .container-supplier th {
-        background: #2c3e50;
+        background: #1d3557;
         color: #fff;
+        padding: 14px;
         font-weight: 600;
-        padding: 12px;
-        text-align: left;
-    }
-
-    /* Dòng dữ liệu */
-    .container-supplier td {
-        padding: 12px;
-        border-bottom: 1px solid #e1e1e1;
-    }
-
-    /* Hover dòng */
-    .container-supplier tr:hover {
-        background: #f1f1f1;
-    }
-
-    /* Button hành động */
-    .container-supplier .btn-action {
-        display: inline-block;
-        padding: 6px 14px;
-        margin-right: 5px;
-        border-radius: 6px;
         font-size: 14px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .container-supplier td {
+        padding: 14px;
+        color: #333;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .container-supplier tr:hover td {
+        background: #edf2f4;
+        transform: scale(1.005);
+        transition: 0.2s;
+    }
+
+    /* ====== ACTION BUTTONS NẰM NGANG ====== */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    /* Giữ CSS nút hiện tại */
+    .action-buttons .btn-action,
+    .action-buttons .btn-info,
+    .action-buttons .btn-danger {
+        display: inline-block;
+        margin: 0;
         font-weight: 600;
-        text-decoration: none;
+        font-size: 14px;
+        border-radius: 6px;
+        padding: 6px 14px;
+        transition: 0.2s;
+    }
+
+    /* EDIT */
+    .btn-edit {
+        background: #f4a261;
         color: #fff;
-        transition: 0.3s;
     }
 
-    /* Sửa */
-    .container-supplier .btn-edit {
-        background: #f39c12;
+    .btn-edit:hover {
+        background: #e76f51;
+        transform: translateY(-2px);
     }
 
-    .container-supplier .btn-edit:hover {
-        background: #d68910;
-        transform: scale(1.05);
+    /* INFO */
+    .btn-info {
+        background: #2a9d8f;
+        color: #fff;
     }
 
-    /* Xóa */
-    .container-supplier .btn-delete {
-        background: #e74c3c;
+    .btn-info:hover {
+        background: #21867a;
+        transform: translateY(-2px);
     }
 
-    .container-supplier .btn-delete:hover {
-        background: #c0392b;
-        transform: scale(1.05);
+    /* DELETE */
+    .btn-danger {
+        background: #e63946;
+        color: #fff;
     }
 
-    /* Responsive */
+    .btn-danger:hover {
+        background: #b71c1c;
+        transform: translateY(-2px);
+    }
+
+    /* ====== RESPONSIVE ====== */
     @media (max-width: 768px) {
         .container-supplier {
             padding: 20px;
         }
 
         .container-supplier table,
-        .container-supplier th,
-        .container-supplier td {
-            font-size: 14px;
+        th,
+        td {
+            font-size: 13px;
         }
 
-        .container-supplier a.add-btn {
-            padding: 8px 16px;
-            font-size: 14px;
+        .btn-action,
+        .btn-info,
+        .btn-danger {
+            padding: 5px 10px;
+            font-size: 13px;
+        }
+
+        .container-supplier .add-btn {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
         }
     }
 </style>

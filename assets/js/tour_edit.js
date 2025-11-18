@@ -2,7 +2,7 @@
 const addNewBtn = document.getElementById('add-new-image-btn');
 const newImagesContainer = document.getElementById('new-images-container');
 
-addNewBtn.addEventListener('click', ()=>{
+addNewBtn.addEventListener('click', () => {
     const div = document.createElement('div');
     div.classList.add('mb-2', 'position-relative');
     div.innerHTML = `
@@ -11,12 +11,12 @@ addNewBtn.addEventListener('click', ()=>{
     `;
     newImagesContainer.appendChild(div);
 
-    div.querySelector('.remove-img-btn').addEventListener('click', ()=>div.remove());
+    div.querySelector('.remove-img-btn').addEventListener('click', () => div.remove());
 });
 
 // Xóa ảnh hiện có
-document.querySelectorAll('.remove-img-btn').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
+document.querySelectorAll('.remove-img-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
         const parent = e.target.closest('div.position-relative');
         parent.remove();
     });

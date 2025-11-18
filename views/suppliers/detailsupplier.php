@@ -1,74 +1,71 @@
-<?php require_once "views/layouts/header.php"; ?><style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f0f2f5;
-        margin: 0;
-        padding: 0;
-    }
+<?php require_once "views/layouts/header.php"; ?>
 
-    .container {
-        max-width: 600px;
-        margin: 50px auto;
-        background: #ffffff;
-        padding: 30px 40px;
-        border-radius: 15px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        transition: transform 0.3s ease;
-    }
+<?php
+// Lấy ID nhà cung cấp từ URL
+$supplier_id = $_GET['id'];
 
-    .container:hover {
-        transform: translateY(-5px);
-    }
+// Kết nối DB
+$conn = mysqli_connect("localhost", "root", "", "tour_management");
 
-    h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
-        font-weight: 700;
-    }
+// Lấy thông tin nhà cung cấp
+$sql = "SELECT * FROM suppliers WHERE id = $supplier_id";
+$result = mysqli_query($conn, $sql);
+$supplier = mysqli_fetch_assoc($result);
 
-    p {
-        font-size: 16px;
-        line-height: 1.6;
-        margin: 12px 0;
-        color: #555;
-    }
+// Lấy danh sách tour của nhà cung cấp
+$sqlTours = "SELECT * FROM tours_suppliers WHERE supplier_id = $supplier_id";
+$tourResult = mysqli_query($conn, $sqlTours);
+?>
 
-    p strong {
-        color: #222;
-        width: 120px;
-        display: inline-block;
-    }
-
-    a.btn {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 10px 25px;
-        font-size: 16px;
-        font-weight: 600;
-        text-decoration: none;
-        color: #fff;
-        background: linear-gradient(135deg, #6a11cb, #2575fc);
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    a.btn:hover {
-        background: linear-gradient(135deg, #2575fc, #6a11cb);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-    }
-</style>
 
 <div class="container">
     <h2>Chi tiết nhà cung cấp</h2>
-
     <p><strong>ID:</strong> <?= $supplier['id'] ?></p>
     <p><strong>Tên NCC:</strong> <?= $supplier['name'] ?></p>
     <p><strong>SĐT:</strong> <?= $supplier['phone'] ?></p>
     <p><strong>Email:</strong> <?= $supplier['email'] ?></p>
     <p><strong>Địa chỉ:</strong> <?= $supplier['address'] ?></p>
 
+    <!-- đánh giá nhà cung cấp -->
+    <div class="supplier-rating">
+        <strong>Đánh giá nhà cung cấp: </strong>
+        <?php
+        $rating = $supplier['rating'];
+        for ($i = 1; $i <= 5; $i++) {
+            if ($i <= $rating) echo '<span class="star filled">&#9733;</span>';
+            else echo '<span class="star">&#9734;</span>';
+        }
+        ?>
+    </div>
+
+    <!-- hạng nhà cung cấp -->
+    <div class="supplier-rank">
+        <strong>Hạng nhà cung cấp: </strong>
+        <?php
+        $rank = $supplier['rank'];
+        if ($rank == 'VIP') echo '<span class="rank vip">VIP</span>';
+        elseif ($rank == 'Thường') echo '<span class="rank normal">Thường</span>';
+        else echo '<span class="rank new">Mới</span>';
+        ?>
+    </div>
+
+    <!-- danh sách tour -->
+    <div class="supplier-tours">
+        <h3>Danh sách tour đang quản lý</h3>
+        <?php
+        if (mysqli_num_rows($tourResult) > 0) {
+            while ($tour = mysqli_fetch_assoc($tourResult)) {
+                echo '<p>• ' . $tour['ten_tour'] . ' – ' . $tour['thoi_gian'] . ' – Giá: ' . number_format($tour['gia_tour'], 0, ",", ".") . ' VND</p>';
+            }
+        } else {
+            echo "<p>Nhà cung cấp này chưa có tour nào.</p>";
+        }
+        ?>
+    </div>
+
     <a href="index.php?action=listsupplier" class="btn">Quay lại danh sách</a>
 </div>
+
+<link rel="stylesheet" href="assets/css/supplier_detail.css">
+
+<?php include PATH_VIEW . 'layouts/footer.php'; ?>
