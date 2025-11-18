@@ -234,3 +234,4 @@ CREATE TABLE tours_supperlisers (
         REFERENCES suppliers(id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
+);
