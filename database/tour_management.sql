@@ -171,6 +171,48 @@ VALUES
 ('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
 ('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
 ('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
+
+CREATE TABLE bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    customer_name VARCHAR(255),
+    customer_phone VARCHAR(20),
+    so_luong INT,
+    tong_tien DECIMAL(12,2),
+    status ENUM('Chờ xử lý','Đã cọc','Hoàn tất','Hủy') DEFAULT 'Chờ xử lý',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
+);
+
+-- 9. KHÁCH THAM GIA (BỔ SUNG)
+CREATE TABLE booking_customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    ho_ten VARCHAR(255),
+    nam_sinh INT,
+    CCCD VARCHAR(100),
+    ghi_chu TEXT,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+);
+
+-- 10. PHÂN PHÒNG KHÁCH SẠN (BỔ SUNG)
+CREATE TABLE hotel_rooms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_customer_id INT NOT NULL,
+    room_type ENUM('Đơn','Đôi','Gia đình'),
+    note TEXT,
+    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
+);
+
+-- 11. CHECK-IN KHÁCH (BỔ SUNG)
+CREATE TABLE customer_checkin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_customer_id INT NOT NULL,
+    status ENUM('Có mặt','Vắng mặt') DEFAULT 'Có mặt',
+    checkin_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
+);
+=======
 -- dán thêm vào sql trong bảng suppliers
 UPDATE suppliers SET rating = 5 WHERE id = 4;
 UPDATE suppliers SET rating = 4 WHERE id = 5;
@@ -179,16 +221,16 @@ UPDATE suppliers SET rating = 4 WHERE id = 7;
 UPDATE suppliers SET rating = 5 WHERE id = 8;
 UPDATE suppliers SET rating = 4 WHERE id = 9;
 -- bảng tour_supplier (các tour thuộc quyền quản lý của supplier nào)
--- CREATE TABLE tours (
---     id INT AUTO_INCREMENT PRIMARY KEY,
---     name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
---     duration VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
---     price DECIMAL(10,2) NULL,
---     supplier_id INT NULL,
---     CONSTRAINT fk_supplier
---         FOREIGN KEY (supplier_id)
---         REFERENCES suppliers(id)
---         ON DELETE SET NULL
---         ON UPDATE CASCADE
--- );
--- chưa có dữ liệu
+
+CREATE TABLE tours_supperlisers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    duration VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+    price DECIMAL(10,2) NULL,
+    supplier_id INT NULL,
+    CONSTRAINT fk_supplier
+        FOREIGN KEY (supplier_id)
+        REFERENCES suppliers(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);

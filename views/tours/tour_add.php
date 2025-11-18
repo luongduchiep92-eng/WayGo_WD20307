@@ -72,5 +72,5 @@
     </form>
 </div>
 
-
+<script src="assets/js/tour_add.js"></script>
 <?php include(PATH_VIEW . 'layouts/footer.php'); ?>
