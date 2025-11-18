@@ -155,6 +155,9 @@ CREATE TABLE suppliers (
     email VARCHAR(255),
     address VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+     -- dán thêm vào sql trong bảng suppliers
+    ALTER TABLE suppliers
+    ADD COLUMN rating INT DEFAULT 0;
 );
 INSERT INTO suppliers (name, phone, email, address)
 VALUES
@@ -168,3 +171,24 @@ VALUES
 ('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
 ('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
 ('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
+-- dán thêm vào sql trong bảng suppliers
+UPDATE suppliers SET rating = 5 WHERE id = 4;
+UPDATE suppliers SET rating = 4 WHERE id = 5;
+UPDATE suppliers SET rating = 5 WHERE id = 6;
+UPDATE suppliers SET rating = 4 WHERE id = 7;
+UPDATE suppliers SET rating = 5 WHERE id = 8;
+UPDATE suppliers SET rating = 4 WHERE id = 9;
+-- bảng tour_supplier (các tour thuộc quyền quản lý của supplier nào)
+CREATE TABLE tours (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    duration VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+    price DECIMAL(10,2) NULL,
+    supplier_id INT NULL,
+    CONSTRAINT fk_supplier
+        FOREIGN KEY (supplier_id)
+        REFERENCES suppliers(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+-- chưa có dữ liệu
