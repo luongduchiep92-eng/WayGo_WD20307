@@ -1,6 +1,7 @@
--- CREATE DATABASE tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE tour_management;
+CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE tour_management_1;
 
+-- 2. Bảng tours
 CREATE TABLE tours (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ten_tour VARCHAR(255) NOT NULL,
@@ -11,9 +12,11 @@ CREATE TABLE tours (
     mo_ta TEXT,
     ngay_khoi_hanh DATE,
     phuong_tien VARCHAR(100),
-    so_nguoi_toi_da INT
+    so_nguoi_toi_da INT,
+    status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
 );
 
+-- 3. Bảng huong_dan_viens
 CREATE TABLE huong_dan_viens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ho_ten VARCHAR(255) NOT NULL,
@@ -29,6 +32,7 @@ CREATE TABLE huong_dan_viens (
     danh_gia VARCHAR(255)
 );
 
+-- 4. Bảng tour_images
 CREATE TABLE tour_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tour_id INT NOT NULL,
@@ -37,12 +41,101 @@ CREATE TABLE tour_images (
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
 );
 
+-- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
 CREATE TABLE tour_hdv (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT,
-    hdv_id INT,
+    tour_id INT NOT NULL,
+    hdv_id INT NOT NULL,
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
     FOREIGN KEY (hdv_id) REFERENCES huong_dan_viens(id) ON DELETE CASCADE
+);
+
+-- 6. Bảng suppliers (nhà cung cấp: khách sạn, nhà hàng, vận chuyển)
+CREATE TABLE suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type ENUM('Nhà hàng','Khách sạn','Vận chuyển') NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    address VARCHAR(255),
+    rating INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Bảng tour_suppliers (N-N: tour ↔ nhà cung cấp)
+CREATE TABLE tour_suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    service_note VARCHAR(255),
+    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE
+);
+
+-- 8. Bảng bookings (đặt tour, quản lý HDV + khách)
+CREATE TABLE bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    hdv_id INT,
+    customer_name VARCHAR(255),
+    customer_phone VARCHAR(20),
+    so_luong INT,
+    tong_tien DECIMAL(12,2),
+    status ENUM('Chờ xử lý','Đã cọc','Hoàn tất','Hủy') DEFAULT 'Chờ xử lý',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
+    FOREIGN KEY (hdv_id) REFERENCES huong_dan_viens(id) ON DELETE SET NULL
+);
+
+-- 9. Bảng booking_customers (danh sách khách tham gia)
+CREATE TABLE booking_customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    ho_ten VARCHAR(255),
+    nam_sinh INT,
+    CCCD VARCHAR(100),
+    ghi_chu TEXT,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+);
+
+-- 10. Bảng hotel_rooms (phân phòng khách sạn)
+CREATE TABLE hotel_rooms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_customer_id INT NOT NULL,
+    room_type ENUM('Đơn','Đôi','Gia đình'),
+    note TEXT,
+    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
+);
+
+-- 11. Bảng customer_checkin (checkin khách)
+CREATE TABLE customer_checkin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_customer_id INT NOT NULL,
+    status ENUM('Có mặt','Vắng mặt') DEFAULT 'Có mặt',
+    checkin_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
+);
+
+-- 12. Bảng tour_schedule_days (lịch trình từng ngày)
+CREATE TABLE tour_schedule_days (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    ngay_thu INT NOT NULL,
+    tieu_de VARCHAR(255),
+    mo_ta TEXT,
+    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
+);
+
+-- 13. Bảng tour_schedule_activities (hoạt động chi tiết từng ngày)
+CREATE TABLE tour_schedule_activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    day_id INT NOT NULL,
+    thoi_gian_bat_dau TIME,
+    thoi_gian_ket_thuc TIME,
+    dia_diem VARCHAR(255),
+    hoat_dong TEXT,
+    hinh_anh VARCHAR(255),
+    FOREIGN KEY (day_id) REFERENCES tour_schedule_days(id) ON DELETE CASCADE
 );
 
 INSERT INTO tours (ten_tour, loai_tour, dia_diem, thoi_gian, gia_tour, mo_ta, ngay_khoi_hanh, phuong_tien, so_nguoi_toi_da) VALUES
@@ -97,26 +190,6 @@ INSERT INTO tour_hdv (tour_id, hdv_id) VALUES
 (9, 4),
 (10, 9);
 
-CREATE TABLE tour_schedule_days (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    ngay_thu INT NOT NULL,
-    tieu_de VARCHAR(255),
-    mo_ta TEXT,
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
-);
-
-CREATE TABLE tour_schedule_activities (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    day_id INT NOT NULL,
-    thoi_gian_bat_dau TIME,
-    thoi_gian_ket_thuc TIME,
-    dia_diem VARCHAR(255),
-    hoat_dong TEXT,
-    hinh_anh VARCHAR(255),
-    FOREIGN KEY (day_id) REFERENCES tour_schedule_days(id) ON DELETE CASCADE
-);
-
 
 -- - Ngày 1: Khám phá trung tâm Đà Lạt
 INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
@@ -147,18 +220,6 @@ INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_t
 (3, '11:30:00', '13:00:00', 'Nhà hàng Hương Rừng', 'Dùng bữa trưa trước khi về', NULL),
 (3, '13:30:00', '15:00:00', 'Khách sạn', 'Thu dọn hành lý và trả phòng', NULL);
 
--- quản lý nhà cung cấp
-CREATE TABLE suppliers ( 
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-    email VARCHAR(255),
-    address VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    -- dán thêm vào sql trong bảng suppliers
-    ALTER TABLE suppliers
-    ADD COLUMN rating INT DEFAULT 0;
-);
 INSERT INTO suppliers (name, phone, email, address)
 VALUES
 ('Công ty Du Lịch Việt', '0909123456', 'contact@dulichviet.com', '123 Nguyễn Trãi, Quận 1, TP.HCM'),
@@ -171,65 +232,3 @@ VALUES
 ('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
 ('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
 ('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
-
-CREATE TABLE bookings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    customer_name VARCHAR(255),
-    customer_phone VARCHAR(20),
-    so_luong INT,
-    tong_tien DECIMAL(12,2),
-    status ENUM('Chờ xử lý','Đã cọc','Hoàn tất','Hủy') DEFAULT 'Chờ xử lý',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
-);
-
--- 9. KHÁCH THAM GIA (BỔ SUNG)
-CREATE TABLE booking_customers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
-    ho_ten VARCHAR(255),
-    nam_sinh INT,
-    CCCD VARCHAR(100),
-    ghi_chu TEXT,
-    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
-);
-
--- 10. PHÂN PHÒNG KHÁCH SẠN (BỔ SUNG)
-CREATE TABLE hotel_rooms (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_customer_id INT NOT NULL,
-    room_type ENUM('Đơn','Đôi','Gia đình'),
-    note TEXT,
-    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
-);
-
--- 11. CHECK-IN KHÁCH (BỔ SUNG)
-CREATE TABLE customer_checkin (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_customer_id INT NOT NULL,
-    status ENUM('Có mặt','Vắng mặt') DEFAULT 'Có mặt',
-    checkin_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
-);
--- dán thêm vào sql trong bảng suppliers
-UPDATE suppliers SET rating = 5 WHERE id = 4;
-UPDATE suppliers SET rating = 4 WHERE id = 5;
-UPDATE suppliers SET rating = 5 WHERE id = 6;
-UPDATE suppliers SET rating = 4 WHERE id = 7;
-UPDATE suppliers SET rating = 5 WHERE id = 8;
-UPDATE suppliers SET rating = 4 WHERE id = 9;
--- bảng tour_supplier (các tour thuộc quyền quản lý của supplier nào)
-CREATE TABLE tours_supperliers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-    duration VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-    price DECIMAL(10,2) NULL,
-    supplier_id INT NULL,
-    CONSTRAINT fk_supplier
-        FOREIGN KEY (supplier_id)
-        REFERENCES suppliers(id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
-);
-chưa có dữ liệu
