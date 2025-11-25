@@ -13,11 +13,13 @@ $action = $_GET['action'] ?? '/';
 //     $controller = new TourController();
 
 match ($action) {
+    // tours: danh sách quản lý tour
     '/', 'tour_list' => (new TourController())->listTour(),
     'tour_add' => (new TourController())->addTour(),
     'tour_detail' => (new TourController())->detailTour(),
     'tour_edit' => (new TourController())->editTour(),
     'tour_delete' => (new TourController())->deleteTour(),
+    //  guides: danh sách quản lý hướng dẫn viên
     'hdv_list' => (new HuongDanVienController())->listHDV(),
     'hdv_add' => (new HuongDanVienController())->addHDV(),
     'hdv_detail' => (new HuongDanVienController())->detailHDV(),
@@ -31,6 +33,12 @@ match ($action) {
     'storesupplier'  => (new SupplierController())->storeSupplier(),
     'updatesupplier' => (new SupplierController())->updateSupplier(),
     'detailsupplier' => (new SupplierController())->detailSupplier(),
+    // booking: danh sách quản lý đặt tour
+    'booking_list' => (new BookingController())->listBooking(),
+    'booking_detail' => (new BookingController())->detailBooking(),
+    'booking_delete' => (new BookingController())->deleteBooking(),
+    'booking_add' => (new BookingController())->addBooking(),
+    'booking_edit' => (new BookingController())->editBooking(),
     default => (new TourController())->listTour(),
 };
 // }

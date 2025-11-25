@@ -1,0 +1,126 @@
+/* ====== BODY & CONTAINER ====== */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+/* ====== HEADING ====== */
+h2, h4 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* ====== TOUR INFO ====== */
+.container p {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+strong {
+    color: #333;
+}
+
+/* ====== HÌNH ẢNH TOUR ====== */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.row .col-md-3 {
+    flex: 1 1 calc(25% - 10px);
+}
+
+.row img {
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+
+/* ====== CARD LỊCH TRÌNH ====== */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #0d6efd;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 15px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-body p {
+    margin-bottom: 10px;
+}
+
+/* ====== LIST HOẠT ĐỘNG ====== */
+.list-group {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-group-item {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #fff;
+}
+
+/* Hình ảnh hoạt động */
+.list-group-item img {
+    border-radius: 6px;
+    max-width: 150px;
+    display: block;
+    margin-top: 5px;
+}
+
+/* ====== BUTTONS ====== */
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    margin-right: 10px;
+    transition: 0.2s;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}

@@ -41,6 +41,11 @@
               <i class="fa-solid fa-users"></i> Quản Lý Nhà Cung Cấp
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= BASE_URL . '?action=booking_list'; ?>">
+              <i class="fa-solid fa-users"></i> Quản Lý Booking
+            </a>
+          </li>
         </ul>
 
         <div class="text-white">

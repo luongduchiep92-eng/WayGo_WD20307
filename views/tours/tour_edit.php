@@ -104,4 +104,5 @@
 
 <script src="assets/js/tour_edit.js"></script>
 
+<link rel="stylesheet" href="<?= BASE_URL . 'assets/css/tour_edit.css' ?>">
 <?php include(PATH_VIEW . 'layouts/footer.php'); ?>
