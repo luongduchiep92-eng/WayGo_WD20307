@@ -12,6 +12,8 @@ $sql = "SELECT * FROM suppliers WHERE id = $supplier_id";
 $result = mysqli_query($conn, $sql);
 $supplier = mysqli_fetch_assoc($result);
 
+// Lấy danh sách tour của nhà cung cấp
+$sqlTours = "SELECT * FROM tours_suppliers WHERE supplier_id = $supplier_id";
 // Nếu không có rating thì mặc định = 0
 $rating = $supplier['rating'] ?? 0;
 // Nếu không có rank thì mặc định = "Mới"
@@ -26,6 +28,7 @@ WHERE ts.supplier_id = $supplier_id
 ";
 $tourResult = mysqli_query($conn, $sqlTours);
 ?>
+
 
 <div class="container">
     <h2>Chi tiết nhà cung cấp</h2>
@@ -75,6 +78,10 @@ $tourResult = mysqli_query($conn, $sqlTours);
 
     <a href="index.php?action=listsupplier" class="btn">Quay lại danh sách</a>
 </div>
+
+<link rel="stylesheet" href="assets/css/supplier_detail.css">
+
+<?php include PATH_VIEW . 'layouts/footer.php'; ?>
 
 <link rel="stylesheet" href="assets/css/supplier_detail.css">
 

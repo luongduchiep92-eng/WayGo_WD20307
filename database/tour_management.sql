@@ -1,6 +1,7 @@
-CREATE DATABASE IF NOT EXISTS tour_management_1 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE tour_management_1;
 
+-- 2. Bảng tours
 -- 2. Bảng tours
 CREATE TABLE tours (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,8 +15,11 @@ CREATE TABLE tours (
     phuong_tien VARCHAR(100),
     so_nguoi_toi_da INT,
     status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
+    so_nguoi_toi_da INT,
+    status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
 );
 
+-- 3. Bảng huong_dan_viens
 -- 3. Bảng huong_dan_viens
 CREATE TABLE huong_dan_viens (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,6 +37,7 @@ CREATE TABLE huong_dan_viens (
 );
 
 -- 4. Bảng tour_images
+-- 4. Bảng tour_images
 CREATE TABLE tour_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tour_id INT NOT NULL,
@@ -42,8 +47,11 @@ CREATE TABLE tour_images (
 );
 
 -- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
+-- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
 CREATE TABLE tour_hdv (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    hdv_id INT NOT NULL,
     tour_id INT NOT NULL,
     hdv_id INT NOT NULL,
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
@@ -61,18 +69,16 @@ CREATE TABLE suppliers (
     rating INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
---  thêm cột rank cho bảng suppliers
-ALTER TABLE suppliers ADD `rank` INT DEFAULT 0;
 
 -- 7. Bảng tour_suppliers (N-N: tour ↔ nhà cung cấp)
-CREATE TABLE `tour_suppliers` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,  
-  `tour_id` INT NOT NULL,
-  `supplier_id` INT NOT NULL,
-  FOREIGN KEY (`tour_id`) REFERENCES tours(id),
-  FOREIGN KEY (`supplier_id`) REFERENCES suppliers(id)
+CREATE TABLE tour_suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    service_note VARCHAR(255),
+    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE
 );
-
 
 -- 8. Bảng bookings (đặt tour, quản lý HDV + khách)
 CREATE TABLE bookings (
@@ -234,144 +240,3 @@ VALUES
 ('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
 ('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
 ('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
--- thêm dữ liệu cho bảng tour_supplier
-INSERT INTO tour_suppliers (tour_id, supplier_id)
-VALUES 
-(1, 5),
-(1, 7);
--- 
-INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
-VALUES
-(2, 1, 'Khám phá trung tâm Đà Lạt', 'Tham quan các điểm nổi bật tại trung tâm thành phố Đà Lạt.'),
-(2, 2, 'Khám phá vùng ven Đà Lạt', 'Trải nghiệm cảnh đẹp ngoại ô Đà Lạt với nhiều địa điểm hấp dẫn.'),
-(2, 3, 'Tự do tham quan & mua sắm', 'Mua sắm, tham quan chợ và nghỉ ngơi trước khi về.');
--- 
-INSERT INTO tour_schedule_activities 
-(day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh)
-VALUES
-(4, '08:00', '10:00', 'Hồ Xuân Hương', 'Tham quan & chụp ảnh quanh Hồ Xuân Hương', 'uploads/tours/ho_xuan_huong.jpg'),
-(4, '10:00', '12:00', 'Quảng trường Lâm Viên', 'Tham quan Quảng trường Lâm Viên – checkin bông hoa dã quỳ', 'uploads/tours/lam_vien.jpg'),
-(4, '13:30', '15:00', 'Nhà thờ Con Gà', 'Tham quan Nhà thờ Con Gà – kiến trúc Pháp độc đáo', NULL),
-(4, '15:00', '17:00', 'Chợ Đà Lạt', 'Khám phá chợ Đà Lạt – mua đặc sản', 'uploads/tours/cho_da_lat.jpg');
--- 
-INSERT INTO tour_schedule_activities 
-(day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh)
-VALUES
-(5, '08:00', '10:00', 'Thung lũng tình yêu', 'Tham quan & chụp ảnh tại Thung lũng Tình yêu', 'uploads/tours/tinh_yeu.jpg'),
-(5, '10:00', '12:00', 'Đồi thông Hai mộ', 'Ghé thăm và tìm hiểu câu chuyện Hai Mộ', NULL),
-(5, '13:30', '15:00', 'Vườn hoa Đà Lạt', 'Tham quan vườn hoa Đà Lạt – check in hoa tươi', 'uploads/tours/vuon_hoa.jpg'),
-(5, '15:00', '17:30', 'LangBiang', 'Leo núi hoặc đi xe jeep lên đỉnh LangBiang', 'uploads/tours/langbiang.jpg');
--- 
-INSERT INTO tour_schedule_activities 
-(day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh)
-VALUES
-(6, '08:00', '10:00', 'Nhà thờ Domain De Marie', 'Tham quan nhà thờ & chụp ảnh kiến trúc châu Âu', NULL),
-(6, '10:00', '12:00', 'Chợ Đà Lạt', 'Mua sắm đặc sản trước khi rời Đà Lạt', 'uploads/tours/cho_da_lat.jpg'),
-(6, '13:30', '15:00', 'Khách sạn', 'Trả phòng & lên xe về lại TP.HCM', NULL);
-
--- =====================================================================
--- tạo 13 bảng trên trước rồi mới tạo đến phần bảng 14 trở xuống này
--- =====================================================================
-
-ALTER TABLE bookings
-ADD COLUMN created_by INT NULL,
-ADD COLUMN approved_by INT NULL,
-ADD COLUMN approved_at DATETIME NULL,
-ADD COLUMN hotel_supplier_id INT NULL,
-ADD COLUMN restaurant_supplier_id INT NULL,
-ADD FOREIGN KEY (created_by) REFERENCES huong_dan_viens(id),
-ADD FOREIGN KEY (approved_by) REFERENCES huong_dan_viens(id),
-ADD FOREIGN KEY (hotel_supplier_id) REFERENCES suppliers(id),
-ADD FOREIGN KEY (restaurant_supplier_id) REFERENCES suppliers(id);
-
-ALTER TABLE hotel_rooms
-MODIFY COLUMN room_type ENUM('Đơn','Đôi','Gia đình'),
-ADD COLUMN trang_thai ENUM('Chưa nhận phòng','Đã nhận phòng','Đã trả phòng') DEFAULT 'Chưa nhận phòng';
-
-ALTER TABLE customer_checkin
-MODIFY COLUMN status ENUM('Có mặt','Vắng mặt','Đã checkout') DEFAULT 'Có mặt',
-ADD COLUMN thoi_gian_ra DATETIME NULL;
-
-CREATE TABLE IF NOT EXISTS tour_restaurants (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    bua_an ENUM('Sáng', 'Trưa', 'Tối'),
-    ngay INT NOT NULL,
-    ghi_chu VARCHAR(255),
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS hdv_lich_lam_viec (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    hdv_id INT NOT NULL,
-    ngay DATE NOT NULL,
-    trang_thai ENUM('Rảnh','Đi tour','Nghỉ phép') DEFAULT 'Rảnh',
-    ghi_chu VARCHAR(255),
-    FOREIGN KEY (hdv_id) REFERENCES huong_dan_viens(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS hdv_nghi (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    hdv_id INT NOT NULL,
-    ngay_nghi DATE NOT NULL,
-    ly_do VARCHAR(255),
-    FOREIGN KEY (hdv_id) REFERENCES huong_dan_viens(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tour_supplier_schedule (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    ngay_thu INT NOT NULL,
-    loai_dich_vu ENUM('Khách sạn', 'Nhà hàng', 'Vận chuyển'),
-    ghi_chu VARCHAR(255),
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE
-);
-INSERT INTO suppliers (name, type, phone, email, address, rating) VALUES
-('Khách sạn Đà Lạt 3 sao', 'Khách sạn', '0909123456', 'dalat_hotel@gmail.com', '123 Đà Lạt', 5),
-('Nhà hàng Đà Lạt', 'Nhà hàng', '0912345678', 'dalat_restaurant@gmail.com', '45 Đà Lạt', 4),
-('Khách sạn Phú Quốc', 'Khách sạn', '0923456789', 'phuquoc_hotel@gmail.com', '12 Phú Quốc', 5),
-('Nhà hàng Phú Quốc', 'Nhà hàng', '0934567890', 'phuquoc_restaurant@gmail.com', '34 Phú Quốc', 4);
-INSERT INTO bookings (tour_id, hdv_id, customer_name, customer_phone, so_luong, tong_tien, created_by, hotel_supplier_id, restaurant_supplier_id) VALUES
-(1, 1, 'Nguyễn Văn B', '0901112222', 2, 7000000, 1, 1, 2),
-(2, 8, 'Trần Thị C', '0903334444', 3, 15600000, 8, 3, 4);
--- thêm lệnh này vào bảng bookings
-UPDATE bookings SET tour_id = 1 WHERE id = 2;
--- 
-INSERT INTO booking_customers (booking_id, ho_ten, nam_sinh, CCCD, ghi_chu) VALUES
-(1, 'Nguyễn Văn B', 1992, '012345678', 'Yêu cầu phòng view đẹp'),
-(1, 'Nguyễn Thị D', 1993, '012345679', NULL),
-(2, 'Trần Thị C', 1990, '023456789', 'Ăn chay'),
-(2, 'Trần Văn E', 1988, '023456788', NULL),
-(2, 'Lê Văn F', 1985, '023456787', NULL);
-INSERT INTO hotel_rooms (booking_customer_id, room_type, note, trang_thai) VALUES
-(1, 'Đôi', 'Phòng có ban công', 'Chưa nhận phòng'),
-(2, 'Đơn', NULL, 'Chưa nhận phòng'),
-(3, 'Gia đình', NULL, 'Chưa nhận phòng'),
-(4, 'Đơn', NULL, 'Chưa nhận phòng'),
-(5, 'Đôi', NULL, 'Chưa nhận phòng');
-INSERT INTO customer_checkin (booking_customer_id, status) VALUES
-(1, 'Có mặt'),
-(2, 'Có mặt'),
-(3, 'Vắng mặt'),
-(4, 'Có mặt'),
-(5, 'Có mặt');
-INSERT INTO hdv_lich_lam_viec (hdv_id, ngay, trang_thai, ghi_chu) VALUES
-(1, '2025-12-10', 'Đi tour', 'Tour Đà Lạt mộng mơ'),
-(8, '2025-12-15', 'Đi tour', 'Tour Phú Quốc nghỉ dưỡng');
-INSERT INTO hdv_nghi (hdv_id, ngay_nghi, ly_do) VALUES
-(1, '2025-12-12', 'Bệnh'),
-(8, '2025-12-20', 'Nghỉ phép');
-INSERT INTO tour_restaurants (tour_id, supplier_id, bua_an, ngay, ghi_chu) VALUES
-(1, 2, 'Sáng', 1, 'Buffet sáng tại khách sạn'),
-(1, 2, 'Trưa', 1, 'Ăn trưa tại nhà hàng địa phương'),
-(2, 4, 'Trưa', 2, 'Ăn trưa hải sản tại Phú Quốc');
-INSERT INTO tour_supplier_schedule (tour_id, supplier_id, ngay_thu, loai_dich_vu, ghi_chu) VALUES
-(1, 1, 1, 'Khách sạn', 'Phòng đặt sẵn'),
-(1, 2, 1, 'Nhà hàng', 'Ăn sáng + trưa'),
-(2, 3, 1, 'Khách sạn', 'Phòng đặt sẵn'),
-(2, 4, 2, 'Nhà hàng', 'Bữa trưa hải sản');
-
