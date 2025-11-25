@@ -56,4 +56,5 @@
     <a href="index.php?action=tour_list" class="btn btn-secondary">Quay lại</a>
 </div>
 
+<link rel="stylesheet" href="<?= BASE_URL . 'assets/css/tour_detail.css' ?>">
 <?php include(PATH_VIEW . 'layouts/footer.php'); ?>

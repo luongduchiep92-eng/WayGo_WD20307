@@ -2,6 +2,7 @@ CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8
 USE tour_management_1;
 
 -- 2. Bảng tours
+-- 2. Bảng tours
 CREATE TABLE tours (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ten_tour VARCHAR(255) NOT NULL,
@@ -14,8 +15,11 @@ CREATE TABLE tours (
     phuong_tien VARCHAR(100),
     so_nguoi_toi_da INT,
     status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
+    so_nguoi_toi_da INT,
+    status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
 );
 
+-- 3. Bảng huong_dan_viens
 -- 3. Bảng huong_dan_viens
 CREATE TABLE huong_dan_viens (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,6 +37,7 @@ CREATE TABLE huong_dan_viens (
 );
 
 -- 4. Bảng tour_images
+-- 4. Bảng tour_images
 CREATE TABLE tour_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tour_id INT NOT NULL,
@@ -42,8 +47,11 @@ CREATE TABLE tour_images (
 );
 
 -- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
+-- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
 CREATE TABLE tour_hdv (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    tour_id INT NOT NULL,
+    hdv_id INT NOT NULL,
     tour_id INT NOT NULL,
     hdv_id INT NOT NULL,
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
