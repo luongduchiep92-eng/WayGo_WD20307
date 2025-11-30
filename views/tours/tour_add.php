@@ -55,6 +55,15 @@
             <label class="form-label">Mô tả</label>
             <textarea name="mo_ta" class="form-control" rows="4"></textarea>
         </div>
+        <div class="form-group">
+            <label>Trạng thái</label>
+            <select name="status" class="form-control" required>
+                <option value="Hoạt động">Hoạt động</option>
+                <option value="Đang tạm dừng">Đang tạm dừng</option>
+                <option value="Hủy">Hủy</option>
+            </select>
+        </div>
+
         <div class="mb-3">
             <label class="form-label">Hình ảnh tour</label>
             <div id="images-container"></div>

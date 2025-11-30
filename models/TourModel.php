@@ -69,24 +69,49 @@ class TourModel extends BaseModel {
 
     // Thêm tour
     public function insertTour($data){
-        $stmt = $this->pdo->prepare("INSERT INTO tours (ten_tour, loai_tour, dia_diem, thoi_gian, gia_tour, mo_ta, ngay_khoi_hanh, phuong_tien, so_nguoi_toi_da) 
-                                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([
-            $data['ten_tour'], $data['loai_tour'], $data['dia_diem'], $data['thoi_gian'],
-            $data['gia_tour'], $data['mo_ta'], $data['ngay_khoi_hanh'], $data['phuong_tien'], $data['so_nguoi_toi_da']
-        ]);
-        return $this->pdo->lastInsertId();
-    }
+    $stmt = $this->pdo->prepare("
+        INSERT INTO tours 
+        (ten_tour, loai_tour, dia_diem, thoi_gian, gia_tour, mo_ta, ngay_khoi_hanh, phuong_tien, so_nguoi_toi_da, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([
+        $data['ten_tour'],
+        $data['loai_tour'],
+        $data['dia_diem'],
+        $data['thoi_gian'],
+        $data['gia_tour'],
+        $data['mo_ta'],
+        $data['ngay_khoi_hanh'],
+        $data['phuong_tien'],
+        $data['so_nguoi_toi_da'],
+        $data['status']
+    ]);
+    return $this->pdo->lastInsertId();
+}
+
 
     // Cập nhật tour
     public function updateTour($id, $data){
-        $stmt = $this->pdo->prepare("UPDATE tours SET ten_tour=?, loai_tour=?, dia_diem=?, thoi_gian=?, gia_tour=?, mo_ta=?, ngay_khoi_hanh=?, phuong_tien=?, so_nguoi_toi_da=? WHERE id=?");
-        $stmt->execute([
-            $data['ten_tour'], $data['loai_tour'], $data['dia_diem'], $data['thoi_gian'],
-            $data['gia_tour'], $data['mo_ta'], $data['ngay_khoi_hanh'], $data['phuong_tien'], $data['so_nguoi_toi_da'],
-            $id
-        ]);
-    }
+    $stmt = $this->pdo->prepare("
+        UPDATE tours 
+        SET ten_tour=?, loai_tour=?, dia_diem=?, thoi_gian=?, gia_tour=?, mo_ta=?, ngay_khoi_hanh=?, phuong_tien=?, so_nguoi_toi_da=?, status=?
+        WHERE id=?
+    ");
+    $stmt->execute([
+        $data['ten_tour'],
+        $data['loai_tour'],
+        $data['dia_diem'],
+        $data['thoi_gian'],
+        $data['gia_tour'],
+        $data['mo_ta'],
+        $data['ngay_khoi_hanh'],
+        $data['phuong_tien'],
+        $data['so_nguoi_toi_da'],
+        $data['status'],
+        $id
+    ]);
+}
+
 
     // Tour Images 
     public function insertTourImage($tour_id, $path){

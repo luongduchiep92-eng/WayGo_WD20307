@@ -52,6 +52,14 @@
             <label>Mô tả</label>
             <textarea name="mo_ta" class="form-control"><?= $tour->mo_ta ?></textarea>
         </div>
+        <div class="form-group">
+            <label>Trạng thái</label>
+            <select name="status" class="form-control">
+                <option value="Hoạt động" <?= $tour->status=='Hoạt động'?'selected':'' ?>>Hoạt động</option>
+                <option value="Đang tạm dừng" <?= $tour->status=='Đang tạm dừng'?'selected':'' ?>>Đang tạm dừng</option>
+                <option value="Hủy" <?= $tour->status=='Hủy'?'selected':'' ?>>Hủy</option>
+            </select>
+        </div>
 
         <!-- Hình ảnh tour -->
         <hr>

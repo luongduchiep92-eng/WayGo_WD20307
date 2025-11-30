@@ -9,6 +9,12 @@
     <p><strong>Phương tiện:</strong> <?= $tour->phuong_tien ?></p>
     <p><strong>Số người tối đa:</strong> <?= $tour->so_nguoi_toi_da ?></p>
     <p><strong>Mô tả:</strong> <?= nl2br($tour->mo_ta) ?></p>
+    <p><strong>Trạng thái:</strong> 
+        <span style="font-weight:bold; color:
+            <?= $tour->status=='Hoạt động'?'green':($tour->status=='Đang tạm dừng'?'orange':'red') ?>">
+            <?= $tour->status ?>
+        </span>
+    </p>
 
     <?php if(!empty($tour->images)): ?>
         <h4>Hình ảnh tour</h4>

@@ -11,6 +11,7 @@
             <th>Tên tour</th>
             <th>Giá tour</th>
             <th>Loại tour</th>
+            <th>Trạng thái</th>
             <th>Thao tác</th>
         </tr>
 
@@ -20,6 +21,13 @@
                 <td><?= $tour->ten_tour ?></td>
                 <td><?= number_format($tour->gia_tour) ?> VND</td>
                 <td><?= $tour->loai_tour ?></td>
+                <td>
+                    <span style="font-weight:bold; color:
+                        <?= $tour->status=='Hoạt động'?'green':($tour->status=='Đang tạm dừng'?'orange':'red') ?>">
+                        <?= $tour->status ?>
+                    </span>
+                </td>
+
                 <td>
                     <a href="<?= BASE_URL . '?action=tour_edit&id=' . $tour->id ?>" class="btn btn-sm btn-warning">Sửa</a>
                     <a href="<?= BASE_URL . '?action=tour_detail&id=' . $tour->id ?>" class="btn btn-sm btn-info">Chi tiết</a>
