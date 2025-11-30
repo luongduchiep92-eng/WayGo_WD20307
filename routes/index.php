@@ -1,18 +1,18 @@
 <?php
 // session_start();
 
-// if (!isset($_SESSION['role'])) {
-//     (new LoginController())->login();
-//     exit;
-// }
-
+if (!isset($_SESSION['user_id']) && !in_array($_GET['action'] ?? '', ['login', 'register'])) {
+    header("Location: index.php?action=login");
+    exit;
+}
 // $role = $_SESSION['role'] ?? 'tour_list';
-$action = $_GET['action'] ?? '/';
+$action = $_GET['action'] ?? 'dashboard';
 
 // if ($role === 'admin') {
 //     $controller = new TourController();
 
 match ($action) {
+    'dashboard' => (new DashboardController())->index(),
     // tours: danh sách quản lý tour
     '/', 'tour_list' => (new TourController())->listTour(),
     'tour_add' => (new TourController())->addTour(),
@@ -33,13 +33,19 @@ match ($action) {
     'storesupplier'  => (new SupplierController())->storeSupplier(),
     'updatesupplier' => (new SupplierController())->updateSupplier(),
     'detailsupplier' => (new SupplierController())->detailSupplier(),
-    // booking: danh sách quản lý đặt tour
+    // auth: đăng nhập, đăng xuất
+    'login' => (new AuthController())->login(),
+    'register' => (new AuthController())->register(),
+    'logout' => (new AuthController())->logout(),
+    
+    // Booking Routes
     'booking_list' => (new BookingController())->listBooking(),
-    'booking_detail' => (new BookingController())->detailBooking(),
-    'booking_delete' => (new BookingController())->deleteBooking(),
     'booking_add' => (new BookingController())->addBooking(),
+    'booking_detail' => (new BookingController())->detailBooking(),
     'booking_edit' => (new BookingController())->editBooking(),
-    default => (new TourController())->listTour(),
+    'booking_delete' => (new BookingController())->deleteBooking(),
+    'ajax_get_tour' => (new BookingController())->ajaxGetTourInfo(),
+    default => (new DashboardController())->index(),
 };
 // }
 // elseif ($role === 'hdv') {

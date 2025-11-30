@@ -22,7 +22,8 @@ class TourController {
                 'mo_ta'=>$_POST['mo_ta'],
                 'ngay_khoi_hanh'=>$_POST['ngay_khoi_hanh'],
                 'phuong_tien'=>$_POST['phuong_tien'],
-                'so_nguoi_toi_da'=>$_POST['so_nguoi_toi_da']
+                'so_nguoi_toi_da'=>$_POST['so_nguoi_toi_da'],
+                'status' => $_POST['status']
             ];
             $tour_id = $this->model->insertTour($tourData);
 
@@ -79,7 +80,8 @@ class TourController {
                 'mo_ta'=>$_POST['mo_ta'],
                 'ngay_khoi_hanh'=>$_POST['ngay_khoi_hanh'],
                 'phuong_tien'=>$_POST['phuong_tien'],
-                'so_nguoi_toi_da'=>$_POST['so_nguoi_toi_da']
+                'so_nguoi_toi_da'=>$_POST['so_nguoi_toi_da'],
+                'status' => $_POST['status']
             ];
             $this->model->updateTour($id, $tourData);
 

@@ -1,0 +1,189 @@
+:root {
+    --primary-color: #4e73df;
+    --secondary-color: #858796;
+    --success-color: #1cc88a;
+    --info-color: #36b9cc;
+    --warning-color: #f6c23e;
+    --danger-color: #e74a3b;
+    --dark-bg: #222e3c;
+    --light-bg: #f8f9fc;
+    --sidebar-width: 250px;
+    --sidebar-collapsed-width: 70px;
+    --transition-speed: 0.3s;
+}
+
+body {
+    background-color: var(--light-bg);
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+}
+
+/* --- Layout Wrapper --- */
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+/* --- Sidebar --- */
+#sidebar {
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    color: #fff;
+    transition: all var(--transition-speed);
+    min-height: 100vh;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+}
+
+#sidebar.active {
+    margin-left: calc(var(--sidebar-width) * -1);
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    font-weight: 800;
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul li a {
+    padding: 15px 25px;
+    font-size: 1rem;
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: 0.3s;
+    border-left: 4px solid transparent;
+}
+
+#sidebar ul li a:hover, #sidebar ul li a.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 4px solid #fff;
+}
+
+#sidebar ul li a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* --- Content --- */
+#content {
+    width: 100%;
+    min-height: 100vh;
+    transition: all var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Navbar Top --- */
+.navbar-custom {
+    padding: 15px 20px;
+    background: #fff;
+    border-bottom: 1px solid #e3e6f0;
+    box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-toggle-sidebar {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* --- Cards (Dashboard) --- */
+.card-modern {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    background: #fff;
+    overflow: hidden;
+    height: 100%;
+}
+
+.card-modern:hover {
+    transform: translateY(-5px);
+}
+
+.card-border-left-primary { border-left: 5px solid var(--primary-color); }
+.card-border-left-success { border-left: 5px solid var(--success-color); }
+.card-border-left-warning { border-left: 5px solid var(--warning-color); }
+.card-border-left-info { border-left: 5px solid var(--info-color); }
+
+.stat-icon {
+    font-size: 2rem;
+    color: #dddfeb;
+}
+
+/* --- Tables Modern --- */
+.table-modern {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+}
+
+.table-modern thead {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.table-modern th, .table-modern td {
+    padding: 15px;
+    vertical-align: middle;
+    border-top: 1px solid #e3e6f0;
+}
+
+.table-modern tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+/* --- Buttons --- */
+.btn {
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+.btn-primary:hover { background-color: #2e59d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(78, 115, 223, 0.3); }
+
+/* --- Search Box --- */
+.search-box {
+    position: relative;
+    max-width: 400px;
+}
+.search-box input {
+    border-radius: 20px;
+    padding-left: 40px;
+    border: 1px solid #d1d3e2;
+    background-color: #f8f9fc;
+}
+.search-box input:focus {
+    background-color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
