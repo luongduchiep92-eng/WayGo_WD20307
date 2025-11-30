@@ -2,7 +2,6 @@ CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8
 USE tour_management_1;
 
 -- 2. Bảng tours
--- 2. Bảng tours
 CREATE TABLE tours (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ten_tour VARCHAR(255) NOT NULL,
@@ -15,11 +14,8 @@ CREATE TABLE tours (
     phuong_tien VARCHAR(100),
     so_nguoi_toi_da INT,
     status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
-    so_nguoi_toi_da INT,
-    status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
 );
 
--- 3. Bảng huong_dan_viens
 -- 3. Bảng huong_dan_viens
 CREATE TABLE huong_dan_viens (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,7 +33,6 @@ CREATE TABLE huong_dan_viens (
 );
 
 -- 4. Bảng tour_images
--- 4. Bảng tour_images
 CREATE TABLE tour_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tour_id INT NOT NULL,
@@ -47,11 +42,8 @@ CREATE TABLE tour_images (
 );
 
 -- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
--- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
 CREATE TABLE tour_hdv (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    hdv_id INT NOT NULL,
     tour_id INT NOT NULL,
     hdv_id INT NOT NULL,
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
@@ -198,7 +190,6 @@ INSERT INTO tour_hdv (tour_id, hdv_id) VALUES
 (9, 4),
 (10, 9);
 
-
 -- - Ngày 1: Khám phá trung tâm Đà Lạt
 INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
 VALUES (1, 1, 'Khám phá trung tâm Đà Lạt', 'Tham quan các điểm nổi tiếng và thưởng thức ẩm thực Đà Lạt.');
@@ -240,3 +231,62 @@ VALUES
 ('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
 ('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
 ('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
+ALTER TABLE booking_customers ADD phone VARCHAR(50) AFTER ho_ten;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    role ENUM('admin', 'staff', 'user') DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Cập nhật bảng Booking Customers (Thêm tuổi, giới tính, giá từng người)
+ALTER TABLE booking_customers
+ADD COLUMN tuoi INT,
+ADD COLUMN gioi_tinh VARCHAR(10),
+ADD COLUMN so_dien_thoai VARCHAR(20),
+ADD COLUMN gia_tien DECIMAL(12,2) DEFAULT 0; -- Giá vé của riêng người này
+
+-- 3. Cập nhật bảng Bookings (Thêm chi phí phát sinh, cọc)
+ALTER TABLE bookings
+ADD COLUMN chi_phi_phat_sinh DECIMAL(12,2) DEFAULT 0,
+ADD COLUMN ly_do_phat_sinh TEXT,
+ADD COLUMN tien_da_coc DECIMAL(12,2) DEFAULT 0;
+
+-- 4. Tạo bảng Lịch sử thanh toán (Để biết ai đã nhập tiền cọc)
+CREATE TABLE IF NOT EXISTS payment_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    so_tien DECIMAL(12,2) NOT NULL,
+    loai_thanh_toan ENUM('Cọc', 'Thanh toán đợt 2', 'Hoàn tất', 'Hoàn tiền') DEFAULT 'Cọc',
+    ghi_chu TEXT,
+    nguoi_thu_tien VARCHAR(100), -- Tên user admin/staff đã thu
+    ngay_thu TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+);
+USE tour_management_1;
+
+-- 1. Tạo bảng Lịch trình theo ngày của Booking
+CREATE TABLE IF NOT EXISTS booking_schedule_days (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    ngay_thu INT NOT NULL,
+    tieu_de VARCHAR(255),
+    mo_ta TEXT,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+);
+
+-- 2. Tạo bảng Hoạt động chi tiết của Booking (nếu cần chi tiết từng giờ)
+-- Lưu ý: Code hiện tại đang lưu gộp vào schedule_days, nhưng tạo sẵn để tránh lỗi mở rộng sau này
+CREATE TABLE IF NOT EXISTS booking_schedule_activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    day_id INT NOT NULL,
+    thoi_gian_bat_dau TIME,
+    thoi_gian_ket_thuc TIME,
+    dia_diem VARCHAR(255),
+    hoat_dong TEXT,
+    FOREIGN KEY (day_id) REFERENCES booking_schedule_days(id) ON DELETE CASCADE
+);

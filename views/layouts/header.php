@@ -1,56 +1,71 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang quản trị</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <script src="https://kit.fontawesome.com/a2e0b1c6c7.js" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị hệ thống - WayGo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
-
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="index.php">ADMIN</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
-      <div class="collapse navbar-collapse" id="adminMenu">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.php?controller=admin&action=dashboard">
-              <i class="fa-solid fa-house"></i> Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= BASE_URL . '?action=tour_list'; ?>">
-              <i class="fa-solid fa-map"></i> Quản lý danh sách tour
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= BASE_URL . '?action=hdv_list'; ?>">
-              <i class="fa-solid fa-users"></i> Quản lý HDV
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= BASE_URL . '?action=listsupplier'; ?>">
-              <i class="fa-solid fa-users"></i> Quản Lý Nhà Cung Cấp
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= BASE_URL . '?action=booking_list'; ?>">
-              <i class="fa-solid fa-users"></i> Quản Lý Booking
-            </a>
-          </li>
-        </ul>
-
-        <div class="text-white">
-          <i class="fa-solid fa-user-circle me-2"></i> Xin chào, Admin
+<div class="wrapper">
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-plane-departure"></i> ADMIN WAYGO
         </div>
-      </div>
-    </div>
-  </nav>
+
+        <ul class="list-unstyled components">
+            <li>
+                <a href="index.php?controller=admin&action=dashboard" class="<?= (!isset($_GET['action']) || $_GET['action'] == 'dashboard') ? 'active' : '' ?>">
+                    <i class="fa-solid fa-gauge-high"></i> Trang chủ
+                </a>
+            </li>
+            <li>
+                <a href="index.php?action=tour_list" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'tour') !== false) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-map-location-dot"></i> Quản lý Tour
+                </a>
+            </li>
+            <li>
+                <a href="index.php?action=booking_list" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'booking') !== false) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-list-check"></i> Quản lý Booking
+                </a>
+            </li>
+            <li>
+                <a href="index.php?action=hdv_list" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'hdv') !== false) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-user-tie"></i> Hướng Dẫn Viên
+                </a>
+            </li>
+            <li>
+                <a href="index.php?action=listsupplier" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'supplier') !== false) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-truck-field"></i> Nhà Cung Cấp
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <nav class="navbar-custom">
+            <button type="button" id="sidebarCollapse" class="btn-toggle-sidebar">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="d-flex align-items-center">
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark fw-bold" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=<?= $_SESSION['user_name'] ?? 'Admin' ?>&background=random" alt="" width="32" height="32" class="rounded-circle me-2">
+                        <span><?= $_SESSION['user_name'] ?? 'Quản trị viên' ?></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                        <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="index.php?action=logout">Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid p-4">
