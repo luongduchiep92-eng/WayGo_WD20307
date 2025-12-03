@@ -45,13 +45,19 @@ match ($action) {
     'booking_edit' => (new BookingController())->editBooking(),
     'booking_delete' => (new BookingController())->deleteBooking(),
     'ajax_get_tour' => (new BookingController())->ajaxGetTourInfo(),
+    'ajax_get_hdv_avail' => (new BookingController())->ajaxGetAvailableHdvs(),
     // comments: đánh giá nhà cung cấp
-'comments_list' => (new CommentController())->listComments(),
+    'comments_list' => (new CommentController())->listComments(),
     'comment_add_form' => (new CommentController())->showAddForm(),
     'comment_add' => (new CommentController())->addComment(),
     'comment_delete' => (new CommentController())->deleteComment(),
     'comment_detail' => (new CommentController())->detailComment(),
-
+    // NHẬT KÝ TOUR (TOUR DIARY)
+    'diary_list' => (new TourDiaryController())->listDiary(),
+    'diary_add' => (new TourDiaryController())->addDiary(),
+    'diary_detail' => (new TourDiaryController())->detailDiary(),
+    'diary_edit' => (new TourDiaryController())->editDiary(),
+    'diary_delete' => (new TourDiaryController())->deleteDiary(),
     default => (new DashboardController())->index(),
 };
 // }

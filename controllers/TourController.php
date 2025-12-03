@@ -5,11 +5,16 @@ class TourController {
     public function __construct(){
         $this->model = new TourModel();
     }
+public function listTour(){
+    // Lấy dữ liệu từ thanh tìm kiếm (nếu có)
+    $keyword = $_GET['keyword'] ?? null;
+    $loai_tour = $_GET['loai_tour'] ?? null;
 
-    public function listTour(){
-        $tours = $this->model->getAllTours();
-        include PATH_VIEW . 'admin/tours/tour_list.php';
-    }
+    // Gọi model với tham số lọc
+    $tours = $this->model->getAllTours($keyword, $loai_tour);
+    
+    include PATH_VIEW . 'admin/tours/tour_list.php';
+}
 
     public function addTour(){
         if($_SERVER['REQUEST_METHOD']==='POST'){
