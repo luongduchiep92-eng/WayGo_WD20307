@@ -125,6 +125,15 @@ CREATE TABLE tour_schedule_days (
     mo_ta TEXT,
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
 );
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    guest_name VARCHAR(255) NOT NULL,
+    supplier_name VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    rating TINYINT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- 13. Bảng tour_schedule_activities (hoạt động chi tiết từng ngày)
 CREATE TABLE tour_schedule_activities (

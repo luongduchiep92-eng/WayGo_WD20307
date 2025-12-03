@@ -43,6 +43,13 @@
                     <i class="fa-solid fa-truck-field"></i> Nhà Cung Cấp
                 </a>
             </li>
+            <li>
+    <a href="index.php?action=comments_list" 
+       class="<?= (isset($_GET['action']) && $_GET['action'] === 'comments_list') ? 'active' : '' ?>">
+        <i class="fa-solid fa-star-half-stroke"></i> Đánh giá Nhà Cung Cấp
+    </a>
+</li>
+
         </ul>
     </nav>
 
