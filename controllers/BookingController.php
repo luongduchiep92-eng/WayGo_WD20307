@@ -17,7 +17,7 @@ class BookingController
 
     public function listBooking() {
         $bookings = $this->model->getAllBookings();
-        include PATH_VIEW . "bookings/booking_list.php";
+        include PATH_VIEW . "admin/bookings/booking_list.php";
     }
 
     public function addBooking() {
@@ -41,7 +41,7 @@ class BookingController
                 }
             }
         }
-        include PATH_VIEW . "bookings/booking_add.php";
+        include PATH_VIEW . "admin/bookings/booking_add.php";
     }
 
     public function detailBooking() {
@@ -53,7 +53,7 @@ class BookingController
         $daThanhToan = $booking['tien_da_coc'];
         $conLai = $tongPhaiTra - $daThanhToan;
 
-        include PATH_VIEW . "bookings/booking_detail.php";
+        include PATH_VIEW . "admin/bookings/booking_detail.php";
     }
 
     public function editBooking() {
@@ -80,7 +80,7 @@ class BookingController
                  exit;
              }
         }
-        include PATH_VIEW . "bookings/booking_edit.php";
+        include PATH_VIEW . "admin/bookings/booking_edit.php";
     }
     
     public function deleteBooking() {

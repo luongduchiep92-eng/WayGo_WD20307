@@ -8,7 +8,7 @@ class TourController {
 
     public function listTour(){
         $tours = $this->model->getAllTours();
-        include PATH_VIEW . 'tours/tour_list.php';
+        include PATH_VIEW . 'admin/tours/tour_list.php';
     }
 
     public function addTour(){
@@ -49,7 +49,7 @@ class TourController {
             header("Location: index.php?action=tour_list"); exit;
         }
 
-        include PATH_VIEW . 'tours/tour_add.php';
+        include PATH_VIEW . 'admin/tours/tour_add.php';
     }
 
     public function detailTour(){
@@ -59,7 +59,7 @@ class TourController {
     // Lấy lịch trình tour
     $schedule = $this->model->getTourSchedule($id);
 
-    include PATH_VIEW . 'tours/tour_detail.php';
+    include PATH_VIEW . 'admin/tours/tour_detail.php';
     }
 
 
@@ -135,7 +135,7 @@ class TourController {
             header("Location: index.php?action=tour_detail&id=$id"); exit;
         }
 
-        include PATH_VIEW . 'tours/tour_edit.php';
+        include PATH_VIEW . 'admin/tours/tour_edit.php';
     }
     public function deleteTour(){
     $id = $_GET['id'] ?? 0;

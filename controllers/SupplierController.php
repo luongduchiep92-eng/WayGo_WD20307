@@ -7,12 +7,12 @@ class SupplierController
     {
         $model = new Supplier();
         $suppliers = $model->getAll();
-        include "views/suppliers/listsupplier.php";
+        include "views/admin/suppliers/listsupplier.php";
     }
 
     public function addSupplier()
     {
-        include "views/suppliers/addsupplier.php";
+        include "views/admin/suppliers/addsupplier.php";
     }
 
     public function storeSupplier()
@@ -36,7 +36,7 @@ class SupplierController
         $model = new Supplier();
         $supplier = $model->find($_GET['id']);
 
-        include "views/suppliers/editsupplier.php";
+        include "views/admin/suppliers/editsupplier.php";
     }
 
     public function updateSupplier()
@@ -67,6 +67,6 @@ class SupplierController
     {
         $model = new Supplier();
         $supplier = $model->find($_GET['id']); // Lấy thông tin theo id
-        include "views/suppliers/detailsupplier.php"; // File hiển thị chi tiết
+        include "views/admin/suppliers/detailsupplier.php"; // File hiển thị chi tiết
     }
 }
