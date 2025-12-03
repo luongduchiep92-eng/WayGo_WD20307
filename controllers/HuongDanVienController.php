@@ -11,7 +11,7 @@ class HuongDanVienController
     public function listHDV()
     {
         $hdvs = $this->model->getAllHDV();
-        include PATH_VIEW . 'huong_dan_vien/hdv_list.php';
+        include PATH_VIEW . 'admin/huong_dan_vien/hdv_list.php';
     }
 
     public function detailHDV()
@@ -23,7 +23,7 @@ class HuongDanVienController
         }
 
         $hdv = $this->model->getHDVById($id);
-        include PATH_VIEW . 'huong_dan_vien/hdv_detail.php';
+        include PATH_VIEW . 'admin/huong_dan_vien/hdv_detail.php';
     }
 
     public function addHDV()
@@ -48,7 +48,7 @@ class HuongDanVienController
             exit;
         }
 
-        include PATH_VIEW . 'huong_dan_vien/hdv_add.php';
+        include PATH_VIEW . 'admin/huong_dan_vien/hdv_add.php';
     }
 
     public function editHDV()
@@ -81,7 +81,7 @@ class HuongDanVienController
             exit;
         }
 
-        include PATH_VIEW . 'huong_dan_vien/hdv_edit.php';
+        include PATH_VIEW . 'admin/huong_dan_vien/hdv_edit.php';
     }
 
     public function deleteHDV()

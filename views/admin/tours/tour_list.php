@@ -15,7 +15,7 @@
                     <tr>
                         <th width="5%">ID</th>
                         <th width="30%">Tên Tour</th>
-                        <th width="15%">Giá Tour</th>
+                        <th width="15%">Giá Tour / 1 người</th>
                         <th width="15%">Loại Tour</th>
                         <th width="15%">Trạng thái</th>
                         <th width="20%">Thao tác</th>
