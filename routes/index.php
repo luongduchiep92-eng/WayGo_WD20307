@@ -45,6 +45,13 @@ match ($action) {
     'booking_edit' => (new BookingController())->editBooking(),
     'booking_delete' => (new BookingController())->deleteBooking(),
     'ajax_get_tour' => (new BookingController())->ajaxGetTourInfo(),
+    // comments: đánh giá nhà cung cấp
+'comments_list' => (new CommentController())->listComments(),
+    'comment_add_form' => (new CommentController())->showAddForm(),
+    'comment_add' => (new CommentController())->addComment(),
+    'comment_delete' => (new CommentController())->deleteComment(),
+    'comment_detail' => (new CommentController())->detailComment(),
+
     default => (new DashboardController())->index(),
 };
 // }
