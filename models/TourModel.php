@@ -2,13 +2,30 @@
 class TourModel extends BaseModel {
 
     // Lấy tất cả tour
-    public function getAllTours() {
-    $stmt = $this->pdo->query("
-        SELECT t.*, 
+    public function getAllTours($keyword = null, $loai_tour = null) {
+    $sql = "SELECT t.*, 
             (SELECT image_path FROM tour_images WHERE tour_id = t.id LIMIT 1) AS image_path
-        FROM tours t
-        ORDER BY t.id DESC
-    ");
+            FROM tours t 
+            WHERE 1=1"; // Kỹ thuật 1=1 để dễ nối chuỗi AND
+
+    $params = [];
+
+    // Nếu có từ khóa tìm kiếm tên tour
+    if (!empty($keyword)) {
+        $sql .= " AND t.ten_tour LIKE ?";
+        $params[] = "%$keyword%";
+    }
+
+    // Nếu có lọc theo loại tour
+    if (!empty($loai_tour)) {
+        $sql .= " AND t.loai_tour = ?";
+        $params[] = $loai_tour;
+    }
+
+    $sql .= " ORDER BY t.id DESC";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_OBJ);
 }
 

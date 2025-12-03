@@ -111,7 +111,8 @@ body {
     transition: transform 0.3s ease;
     background: #fff;
     overflow: hidden;
-    height: 100%;
+    height: auto !important; /* Đổi từ 100% thành auto và thêm !important để chắc chắn */
+    min-height: 0;
 }
 
 .card-modern:hover {

@@ -7,38 +7,50 @@ class BookingController
         $this->model = new BookingModel();
     }
 
-    // API AJAX: Lấy thông tin tour để đổ vào form
+    // --- [MỚI] AJAX: LẤY HDV RẢNH THEO NGÀY & LOẠI TOUR ---
+    public function ajaxGetAvailableHdvs() {
+        $ngay = $_GET['date'] ?? '';
+        $type = $_GET['type'] ?? '';
+
+        if ($ngay && $type) {
+            $hdvs = $this->model->getAvailableHdvs($ngay, $type);
+            echo json_encode($hdvs);
+        } else {
+            echo json_encode([]);
+        }
+        exit;
+    }
+
+    // ... (GIỮ NGUYÊN CODE CŨ) ...
     public function ajaxGetTourInfo() {
         if (!isset($_GET['tour_id'])) return;
         $data = $this->model->getTourDataForBooking($_GET['tour_id']);
         echo json_encode($data);
         exit;
     }
+public function listBooking() {
+    // 1. Lấy trạng thái từ thanh tìm kiếm trên URL (nếu có)
+    $status = $_GET['status'] ?? null; 
 
-    public function listBooking() {
-        $bookings = $this->model->getAllBookings();
-        include PATH_VIEW . "admin/bookings/booking_list.php";
-    }
+    // 2. Truyền trạng thái này vào Model
+    $bookings = $this->model->getAllBookings($status);
+
+    include PATH_VIEW . "admin/bookings/booking_list.php";
+}
 
     public function addBooking() {
         $tours = $this->model->getAllTours();
-        $hdvs = $this->model->getAllHdvs();
+        // $hdvs = $this->model->getAllHdvs(); // Xóa dòng này, không load HDV từ đầu nữa
         $hotels = $this->model->getSuppliersByType('Khách sạn');
         $restaurants = $this->model->getSuppliersByType('Nhà hàng');
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Validate HDV
-            $ngayKhoiHanh = $_POST['ngay_khoi_hanh']; 
-            if (!$this->model->isHdvAvailable($_POST['hdv_id'], $ngayKhoiHanh)) {
-                $error = "Hướng dẫn viên này đang bận hoặc nghỉ phép vào ngày $ngayKhoiHanh!";
+            $result = $this->model->createBookingFull($_POST);
+            if (is_array($result) && isset($result['error'])) {
+                $error = $result['error'];
             } else {
-                $result = $this->model->createBookingFull($_POST);
-                if (is_array($result) && isset($result['error'])) {
-                    $error = $result['error'];
-                } else {
-                    header("Location: index.php?action=booking_list");
-                    exit;
-                }
+                header("Location: index.php?action=booking_list");
+                exit;
             }
         }
         include PATH_VIEW . "admin/bookings/booking_add.php";
@@ -47,38 +59,29 @@ class BookingController
     public function detailBooking() {
         $id = $_GET['id'] ?? 0;
         $booking = $this->model->getBookingDetailFull($id);
-        
-        // Tính toán tài chính
-        $tongPhaiTra = $booking['tong_tien'] + $booking['chi_phi_phat_sinh'];
-        $daThanhToan = $booking['tien_da_coc'];
-        $conLai = $tongPhaiTra - $daThanhToan;
-
         include PATH_VIEW . "admin/bookings/booking_detail.php";
     }
 
     public function editBooking() {
         $id = $_GET['id'];
         $booking = $this->model->getBookingDetailFull($id);
-        $tours = $this->model->getAllTours(); // Để hiển thị tên tour (disable)
-        $hdvs = $this->model->getAllHdvs();
+        $tours = $this->model->getAllTours(); 
+        $hdvs = $this->model->getAllHdvs(); // Edit thì cứ load hết để hiển thị người cũ
         $hotels = $this->model->getSuppliersByType('Khách sạn');
         $restaurants = $this->model->getSuppliersByType('Nhà hàng');
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-             // Validate HDV nếu thay đổi
-             if ($_POST['hdv_id'] != $booking['hdv_id'] && !$this->model->isHdvAvailable($_POST['hdv_id'], $booking['ngay_khoi_hanh'], $id)) {
-                $error = "Hướng dẫn viên mới đang bận!";
-             } else {
-                 $this->model->updateBookingFull($id, $_POST);
-                 
-                 // Nếu có nhập thêm cọc ở trang Edit
-                 if (!empty($_POST['them_coc']) && $_POST['them_coc'] > 0) {
-                     $this->model->addPaymentHistory($id, $_POST['them_coc'], 'Thanh toán thêm', 'Thêm từ trang sửa');
+             $this->model->updateBookingFull($id, $_POST);
+             
+             // Xử lý thanh toán thêm (Loại bỏ dấu phẩy)
+             if (!empty($_POST['them_coc']) && $_POST['them_coc'] != 0) {
+                 $amount = str_replace(',', '', $_POST['them_coc']);
+                 if(is_numeric($amount) && $amount > 0) {
+                    $this->model->addPaymentHistory($id, $amount, 'Thanh toán thêm', 'Cập nhật tại trang chỉnh sửa');
                  }
-                 
-                 header("Location: index.php?action=booking_detail&id=$id");
-                 exit;
              }
+             header("Location: index.php?action=booking_detail&id=$id");
+             exit;
         }
         include PATH_VIEW . "admin/bookings/booking_edit.php";
     }
