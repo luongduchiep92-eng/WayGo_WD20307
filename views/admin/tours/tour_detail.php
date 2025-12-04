@@ -160,9 +160,9 @@
                 <div class="card-header bg-primary text-white fw-bold text-center">THÔNG TIN TÓM TẮT</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item d-flex justify-content-between px-0">
+                        <!-- <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted"><i class="fa-regular fa-calendar"></i> Khởi hành:</span>
-                            <span class="fw-bold"><?= date('d/m/Y', strtotime($tour->ngay_khoi_hanh)) ?></span>
+                            <span class="fw-bold"><?= date('d/m/Y', strtotime($tour->ngay_khoi_hanh)) ?></span> -->
                         </li>
                         <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted"><i class="fa-solid fa-hourglass-half"></i> Thời gian:</span>

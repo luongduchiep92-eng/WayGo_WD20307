@@ -1,54 +1,52 @@
 <?php
-class CommentModel {
-    public function __construct() {
-        if(!isset($_SESSION)) session_start();
-        if(!isset($_SESSION['comments'])) {
-            $_SESSION['comments'] = [];
-        }
-    }
+require_once "BaseModel.php";
 
-    // Lấy comment, lọc theo guest_name, supplier_name hoặc rating
+class CommentModel extends BaseModel {
+    
+    // Lấy tất cả comment kèm bộ lọc
     public function getAllComments($filters = []) {
-        $comments = $_SESSION['comments'];
-        if(!empty($filters)) {
-            $comments = array_filter($comments, function($c) use ($filters) {
-                $ok = true;
-                if(!empty($filters['guest_name'])) {
-                    $ok = $ok && stripos($c['guest_name'], $filters['guest_name']) !== false;
-                }
-                if(!empty($filters['supplier_name'])) {
-                    $ok = $ok && stripos($c['supplier_name'], $filters['supplier_name']) !== false;
-                }
-                if(!empty($filters['rating'])) {
-                    $ok = $ok && $c['rating'] == $filters['rating'];
-                }
-                return $ok;
-            });
+        $sql = "SELECT * FROM comments WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['guest_name'])) {
+            $sql .= " AND guest_name LIKE ?";
+            $params[] = "%" . $filters['guest_name'] . "%";
         }
-        return $comments;
+        if (!empty($filters['supplier_name'])) {
+            $sql .= " AND supplier_name LIKE ?";
+            $params[] = "%" . $filters['supplier_name'] . "%";
+        }
+        if (!empty($filters['rating'])) {
+            $sql .= " AND rating = ?";
+            $params[] = $filters['rating'];
+        }
+
+        $sql .= " ORDER BY created_at DESC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Thêm comment mới
     public function addComment($guest_name, $supplier_name, $content, $rating) {
-        $comments = $_SESSION['comments'];
-        $comments[] = [
-            'id' => count($comments) + 1,
-            'guest_name' => $guest_name,
-            'supplier_name' => $supplier_name,
-            'content' => $content,
-            'rating' => $rating,
-            'created_at' => date('Y-m-d H:i:s')
-        ];
-        $_SESSION['comments'] = $comments;
+        $sql = "INSERT INTO comments (guest_name, supplier_name, content, rating, created_at) VALUES (?, ?, ?, ?, NOW())";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$guest_name, $supplier_name, $content, $rating]);
     }
 
+    // Xóa comment
     public function deleteComment($id) {
-        $_SESSION['comments'] = array_filter($_SESSION['comments'], fn($c) => $c['id'] != $id);
+        $sql = "DELETE FROM comments WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$id]);
     }
 
+    // Lấy chi tiết comment
     public function getCommentById($id) {
-        foreach($_SESSION['comments'] as $c){
-            if($c['id'] == $id) return $c;
-        }
-        return null;
+        $sql = "SELECT * FROM comments WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

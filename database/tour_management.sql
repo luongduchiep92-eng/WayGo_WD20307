@@ -299,3 +299,44 @@ CREATE TABLE IF NOT EXISTS booking_schedule_activities (
     hoat_dong TEXT,
     FOREIGN KEY (day_id) REFERENCES booking_schedule_days(id) ON DELETE CASCADE
 );
+ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'staff', 'user', 'hdv') DEFAULT 'user';
+INSERT INTO users (username, password, full_name, email, role) 
+VALUES (
+    'binh_an', 
+    '$2y$10$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquii.V3ilJppDcv.fTkJK', -- Mật khẩu: 123
+    'Trần Bình An', 
+    'binh_an@tour.vn', 
+    'hdv'
+);
+INSERT INTO huong_dan_viens (ho_ten, email, so_dien_thoai, loai_hdv) 
+VALUES ('Trần Bình An', 'binh_an@tour.vn', '0988777666', 'Nội địa');
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    guest_name VARCHAR(255) NOT NULL,
+    supplier_name VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    rating TINYINT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+-- Xóa dữ liệu cũ (nếu có) để tránh trùng lặp rác
+TRUNCATE TABLE comments;
+
+-- Thêm dữ liệu đánh giá mẫu
+INSERT INTO comments (guest_name, supplier_name, content, rating, created_at) VALUES
+-- 1. Khách từ Booking đánh giá NCC 'Saigon Tourist'
+('Nguyễn Văn A', 'Saigon Tourist', 'Dịch vụ đặt xe của bên này rất tốt, xe đời mới và tài xế lịch sự. Tuy nhiên giá hơi cao so với mặt bằng chung.', 4, '2023-10-06 09:00:00'),
+
+-- 2. Khách từ Booking đánh giá NCC 'Fiditour Travel'
+('Trần Thị B', 'Fiditour Travel', 'Khách sạn do Fiditour sắp xếp rất sạch sẽ, view biển đẹp đúng như quảng cáo. Rất hài lòng.', 5, '2023-10-11 14:30:00'),
+
+-- 3. Khách từ Booking (Đoàn Cty) đánh giá NCC 'Hà Nội Tourist'
+('Lê Văn C', 'Hà Nội Tourist', 'Hướng dẫn viên địa phương kiến thức tốt, nhưng nhà hàng liên kết phục vụ đồ ăn hơi nguội.', 3, '2023-11-22 10:15:00'),
+
+-- 4. Khách từ Booking Test HDV An đánh giá 'Asia Tour Service'
+('Nguyễn Thị Khách Hàng', 'Asia Tour Service', 'Chất lượng tour ổn định, không phát sinh chi phí vô lý. Sẽ ủng hộ lần sau.', 5, '2023-12-05 16:45:00'),
+
+-- 5. Đánh giá về NCC 'Công ty Du Lịch Việt'
+('Trần Văn Chồng', 'Công ty Du Lịch Việt', 'Xe di chuyển êm ái, bác tài vui tính. Điểm trừ là chờ đón ở sân bay hơi lâu.', 4, '2023-12-06 08:20:00'),
+
+-- 6. Đánh giá tiêu cực để test bộ lọc 1-2 sao
+('Lê Văn Đoàn', 'Vietnam Travel Group', 'Thất vọng về thái độ phục vụ của nhân viên lễ tân khách sạn. Cần cải thiện ngay.', 2, '2023-12-15 19:30:00');2.3

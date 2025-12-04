@@ -44,16 +44,21 @@
                 </a>
             </li>
             <li>
-    <a href="index.php?action=comments_list" 
-       class="<?= (isset($_GET['action']) && $_GET['action'] === 'comments_list') ? 'active' : '' ?>">
-        <i class="fa-solid fa-star-half-stroke"></i> Đánh giá Nhà Cung Cấp
-    </a>
-</li>
-<li>
-    <a href="index.php?action=diary_list" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'diary') !== false) ? 'active' : '' ?>">
-        <i class="fa-solid fa-book-journal-whills"></i> Nhật Ký Tour
-    </a>
-</li>
+            <a href="index.php?action=comments_list" 
+            class="<?= (isset($_GET['action']) && $_GET['action'] === 'comments_list') ? 'active' : '' ?>">
+                <i class="fa-solid fa-star-half-stroke"></i> Đánh giá Nhà Cung Cấp
+            </a>
+            </li>
+            <li>
+                <a href="index.php?action=diary_list" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'diary') !== false) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-book-journal-whills"></i> Nhật Ký Tour
+                </a>
+            </li>
+            <li>
+                <a href="index.php?action=checkin_list" class="<?= (isset($_GET['action']) && strpos($_GET['action'], 'checkin') !== false) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-clipboard-user"></i> Check-in Khách
+                </a>
+            </li>
 
         </ul>
     </nav>
