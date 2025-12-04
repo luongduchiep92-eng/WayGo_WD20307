@@ -340,3 +340,4 @@ INSERT INTO comments (guest_name, supplier_name, content, rating, created_at) VA
 
 -- 6. Đánh giá tiêu cực để test bộ lọc 1-2 sao
 ('Lê Văn Đoàn', 'Vietnam Travel Group', 'Thất vọng về thái độ phục vụ của nhân viên lễ tân khách sạn. Cần cải thiện ngay.', 2, '2023-12-15 19:30:00');2.3
+-- ok
