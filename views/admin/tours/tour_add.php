@@ -40,12 +40,12 @@
                     <label class="form-label">Thời gian (VD: 3N2Đ)</label>
                     <input type="text" name="thoi_gian" class="form-control" required>
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <label class="form-label">Ngày khởi hành</label>
                     <input type="date" name="ngay_khoi_hanh" class="form-control" required>
-                </div>
+                </div> -->
                 <div class="col-md-4">
-                    <label class="form-label fw-bold text-success">Giá tour (VNĐ)</label>
+                    <label class="form-label fw-bold text-success">Giá tour / 1 người (VNĐ)</label>
                     <input type="number" name="gia_tour" class="form-control" min="0" required>
                 </div>
                 <div class="col-md-4">

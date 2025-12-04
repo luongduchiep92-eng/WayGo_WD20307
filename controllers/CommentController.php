@@ -1,13 +1,15 @@
 <?php
-require_once 'models/CommentModel.php';
+// Gọi model
+require_once PATH_MODEL . 'CommentModel.php';
 
 class CommentController {
     private $model;
+
     public function __construct() {
         $this->model = new CommentModel();
     }
 
-    // List comment
+    // Danh sách
     public function listComments() {
         $filters = [
             'guest_name' => $_POST['guest_name'] ?? '',
@@ -15,15 +17,20 @@ class CommentController {
             'rating' => $_POST['rating'] ?? ''
         ];
         $comments = $this->model->getAllComments($filters);
-        include 'views/comments/list.php';
+        
+        // --- SỬA LỖI Ở DÒNG DƯỚI ---
+        // Sai: include PATH_VIEW . 'views/comments/list.php';
+        // Đúng:
+        include PATH_VIEW . 'admin/comments/list.php'; 
     }
 
-    // Show add comment form
+    // Form thêm mới
     public function showAddForm() {
-        include 'views/comments/add.php';
+        // --- SỬA LỖI Ở DÒNG DƯỚI ---
+        include PATH_VIEW . 'admin/comments/add.php';
     }
 
-    // Add comment
+    // Xử lý thêm
     public function addComment() {
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->model->addComment(
@@ -37,7 +44,7 @@ class CommentController {
         exit;
     }
 
-    // Delete comment
+    // Xóa
     public function deleteComment() {
         $id = $_GET['id'] ?? null;
         if($id) $this->model->deleteComment($id);
@@ -45,15 +52,11 @@ class CommentController {
         exit;
     }
 
-    // Xem chi tiết comment
+    // Chi tiết
     public function detailComment() {
         $id = $_GET['id'] ?? null;
         $comment = $this->model->getCommentById($id);
-        include 'views/comments/detail.php';
+        // --- SỬA LỖI Ở DÒNG DƯỚI ---
+        include PATH_VIEW . 'admin/comments/detail.php';
     }
 }
-
-
-
-
-

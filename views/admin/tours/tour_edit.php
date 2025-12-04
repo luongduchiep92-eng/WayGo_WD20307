@@ -40,12 +40,12 @@
                     <label class="form-label">Thời gian</label>
                     <input type="text" name="thoi_gian" class="form-control" value="<?= $tour->thoi_gian ?>">
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <label class="form-label">Ngày khởi hành</label>
                     <input type="date" name="ngay_khoi_hanh" class="form-control" value="<?= $tour->ngay_khoi_hanh ?>">
-                </div>
+                </div> -->
                 <div class="col-md-4">
-                    <label class="form-label fw-bold text-success">Giá tour</label>
+                    <label class="form-label fw-bold text-success">Giá tour / 1 người</label>
                     <input type="number" name="gia_tour" class="form-control" value="<?= $tour->gia_tour ?>">
                 </div>
                 <div class="col-md-4">
