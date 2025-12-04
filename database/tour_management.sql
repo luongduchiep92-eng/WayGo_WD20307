@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE tour_management_1;
 
 -- 2. Bảng tours
