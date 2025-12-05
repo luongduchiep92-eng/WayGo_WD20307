@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File: routes/index.php
  */
@@ -35,21 +36,21 @@ if ($role === 'admin') {
     // --- KHU VỰC CỦA ADMIN ---
     match ($action) {
         'dashboard' => (new DashboardController())->index(),
-        
+
         // Quản lý Tour
         '/', 'tour_list' => (new TourController())->listTour(),
         'tour_add' => (new TourController())->addTour(),
         'tour_detail' => (new TourController())->detailTour(),
         'tour_edit' => (new TourController())->editTour(),
         'tour_delete' => (new TourController())->deleteTour(),
-        
+
         // Quản lý HDV
         'hdv_list' => (new HuongDanVienController())->listHDV(),
         'hdv_add' => (new HuongDanVienController())->addHDV(),
         'hdv_detail' => (new HuongDanVienController())->detailHDV(),
         'hdv_edit' => (new HuongDanVienController())->editHDV(),
         'hdv_delete' => (new HuongDanVienController())->deleteHDV(),
-        
+
         // Quản lý NCC
         'listsupplier'   => (new SupplierController())->listSupplier(),
         'addsupplier' => (new SupplierController())->addSupplier(),
@@ -58,7 +59,7 @@ if ($role === 'admin') {
         'editsupplier' => (new SupplierController())->editSupplier(),
         'updatesupplier' => (new SupplierController())->updateSupplier(),
         'deletesupplier' => (new SupplierController())->deleteSupplier(),
-        
+
         // Quản lý Booking
         'booking_list' => (new BookingController())->listBooking(),
         'booking_add' => (new BookingController())->addBooking(),
@@ -67,47 +68,50 @@ if ($role === 'admin') {
         'booking_delete' => (new BookingController())->deleteBooking(),
         'ajax_get_tour' => (new BookingController())->ajaxGetTourInfo(),
         'ajax_get_hdv_avail' => (new BookingController())->ajaxGetAvailableHdvs(),
-        
+
         // Quản lý Đánh giá
         'comments_list' => (new CommentController())->listComments(),
         'comment_add_form' => (new CommentController())->showAddForm(),
         'comment_add' => (new CommentController())->addComment(),
         'comment_delete' => (new CommentController())->deleteComment(),
         'comment_detail' => (new CommentController())->detailComment(),
-        
+
         // Nhật ký Tour
         'diary_list' => (new TourDiaryController())->listDiary(),
         'diary_add' => (new TourDiaryController())->addDiary(),
         'diary_detail' => (new TourDiaryController())->detailDiary(),
         'diary_edit' => (new TourDiaryController())->editDiary(),
         'diary_delete' => (new TourDiaryController())->deleteDiary(),
-        
+        // quản lý tài khoản
+        'user_list'    => (new UserController())->listUser(),
+        'user_add'     => (new UserController())->addUser(),
+        'user_edit'    => (new UserController())->editUser(),
+        'user_delete'  => (new UserController())->deleteUser(),
+
         // Check-in
         'checkin_list' => (new CheckinController())->listBookings(),
         'checkin_perform' => (new CheckinController())->performCheckin(),
         'checkin_ajax_update' => (new CheckinController())->ajaxUpdateStatus(),
         'checkin_all' => (new CheckinController())->checkinAll(),
-        
+
         default => (new DashboardController())->index(),
     };
-
 } elseif ($role === 'hdv') {
     // --- KHU VỰC CỦA HDV ---
     match ($action) {
         'dashboard' => (new HdvAppController())->index(),
         'my_tours'  => (new HdvAppController())->myTours(),
         'hdv_tour_detail' => (new HdvAppController())->detailTour(),
-        
+
         // Các chức năng dùng chung với Admin (nhưng giao diện HDV)
         'checkin_perform' => (new CheckinController())->performCheckin(),
         'checkin_ajax_update' => (new CheckinController())->ajaxUpdateStatus(),
         'checkin_all' => (new CheckinController())->checkinAll(),
         'diary_add' => (new TourDiaryController())->addDiary(),
         'diary_edit' => (new TourDiaryController())->editDiary(),
-        
+
         default => (new HdvAppController())->index(),
     };
-
 } else {
     // Trường hợp đăng nhập rồi nhưng role lạ hoặc bị lỗi
     echo "<div style='text-align:center; margin-top:50px;'>";
