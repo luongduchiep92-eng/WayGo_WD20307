@@ -3,36 +3,33 @@
  * File: routes/index.php
  */
 
-// 1. Kiểm tra session_id() để tránh lỗi "Session already active"
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $action = $_GET['action'] ?? 'dashboard';
 
-// 2. KHU VỰC CÔNG KHAI (Public Routes) - Ai cũng vào được
-// Bao gồm: Đăng nhập, Đăng ký, Đăng xuất
+// --- 1. KHU VỰC CÔNG KHAI (Login/Register) ---
 if (in_array($action, ['login', 'register', 'logout'])) {
     match ($action) {
         'login' => (new AuthController())->login(),
         'register' => (new AuthController())->register(),
         'logout' => (new AuthController())->logout(),
     };
-    return; // Dừng xử lý tại đây sau khi xong
+    return;
 }
 
-// 3. KIỂM TRA ĐĂNG NHẬP (Authentication Check)
-// Nếu chưa đăng nhập -> Đá về trang login ngay
+// --- 2. KIỂM TRA ĐĂNG NHẬP ---
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php?action=login");
     exit;
 }
 
-// 4. PHÂN QUYỀN (Authorization) - Dựa vào Role
+// Lấy role từ session
 $role = $_SESSION['role'] ?? '';
 
-if ($role === 'admin') {
-    // --- KHU VỰC CỦA ADMIN ---
+// NHÓM 1: ADMIN & STAFF -> Vào trang quản trị
+if ($role === 'admin' || $role === 'staff') {
     match ($action) {
         'dashboard' => (new DashboardController())->index(),
         
@@ -77,28 +74,29 @@ if ($role === 'admin') {
         
         // Nhật ký Tour
         'diary_list' => (new TourDiaryController())->listDiary(),
-        'diary_add' => (new TourDiaryController())->addDiary(),
-        'diary_detail' => (new TourDiaryController())->detailDiary(),
-        'diary_edit' => (new TourDiaryController())->editDiary(),
-        'diary_delete' => (new TourDiaryController())->deleteDiary(),
-        
+        'diary_manage' => (new TourDiaryController())->manageDiary(),
+        'diary_delete_all' => (new TourDiaryController())->deleteBookingDiaries(),
+        'ajax_get_tour_days' => (new TourDiaryController())->ajaxGetTourDays(),
+
         // Check-in
         'checkin_list' => (new CheckinController())->listBookings(),
         'checkin_perform' => (new CheckinController())->performCheckin(),
         'checkin_ajax_update' => (new CheckinController())->ajaxUpdateStatus(),
         'checkin_all' => (new CheckinController())->checkinAll(),
-        
+        'checkin_create_session' => (new CheckinController())->createSession(),
+        'checkin_delete_session' => (new CheckinController())->deleteSession(),
         default => (new DashboardController())->index(),
     };
 
-} elseif ($role === 'hdv') {
-    // --- KHU VỰC CỦA HDV ---
+} 
+// NHÓM 2: HDV -> Vào trang ứng dụng mobile
+elseif ($role === 'hdv') {
     match ($action) {
         'dashboard' => (new HdvAppController())->index(),
         'my_tours'  => (new HdvAppController())->myTours(),
         'hdv_tour_detail' => (new HdvAppController())->detailTour(),
         
-        // Các chức năng dùng chung với Admin (nhưng giao diện HDV)
+        // Các chức năng dùng chung (Checkin & Diary)
         'checkin_perform' => (new CheckinController())->performCheckin(),
         'checkin_ajax_update' => (new CheckinController())->ajaxUpdateStatus(),
         'checkin_all' => (new CheckinController())->checkinAll(),
@@ -108,11 +106,12 @@ if ($role === 'admin') {
         default => (new HdvAppController())->index(),
     };
 
-} else {
-    // Trường hợp đăng nhập rồi nhưng role lạ hoặc bị lỗi
-    echo "<div style='text-align:center; margin-top:50px;'>";
-    echo "<h3>Bạn không có quyền truy cập khu vực này!</h3>";
-    echo "<p>Role hiện tại: <strong>$role</strong></p>";
-    echo "<a href='index.php?action=logout'>Đăng xuất</a>";
+} 
+else {
+    // Role lạ hoặc user thường (không có quyền vào admin)
+    echo "<div style='display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; font-family:sans-serif;'>";
+    echo "<h2 style='color:red;'>Truy cập bị từ chối!</h2>";
+    echo "<p>Tài khoản của bạn (Role: $role) không có quyền truy cập trang quản trị.</p>";
+    echo "<a href='index.php?action=logout' style='padding:10px 20px; background:#333; color:#fff; text-decoration:none; border-radius:5px;'>Đăng xuất</a>";
     echo "</div>";
 }
