@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File: routes/index.php
  */
@@ -32,21 +33,21 @@ $role = $_SESSION['role'] ?? '';
 if ($role === 'admin' || $role === 'staff') {
     match ($action) {
         'dashboard' => (new DashboardController())->index(),
-        
+
         // Quản lý Tour
         '/', 'tour_list' => (new TourController())->listTour(),
         'tour_add' => (new TourController())->addTour(),
         'tour_detail' => (new TourController())->detailTour(),
         'tour_edit' => (new TourController())->editTour(),
         'tour_delete' => (new TourController())->deleteTour(),
-        
+
         // Quản lý HDV
         'hdv_list' => (new HuongDanVienController())->listHDV(),
         'hdv_add' => (new HuongDanVienController())->addHDV(),
         'hdv_detail' => (new HuongDanVienController())->detailHDV(),
         'hdv_edit' => (new HuongDanVienController())->editHDV(),
         'hdv_delete' => (new HuongDanVienController())->deleteHDV(),
-        
+
         // Quản lý NCC
         'listsupplier'   => (new SupplierController())->listSupplier(),
         'addsupplier' => (new SupplierController())->addSupplier(),
@@ -55,7 +56,7 @@ if ($role === 'admin' || $role === 'staff') {
         'editsupplier' => (new SupplierController())->editSupplier(),
         'updatesupplier' => (new SupplierController())->updateSupplier(),
         'deletesupplier' => (new SupplierController())->deleteSupplier(),
-        
+
         // Quản lý Booking
         'booking_list' => (new BookingController())->listBooking(),
         'booking_add' => (new BookingController())->addBooking(),
@@ -64,14 +65,14 @@ if ($role === 'admin' || $role === 'staff') {
         'booking_delete' => (new BookingController())->deleteBooking(),
         'ajax_get_tour' => (new BookingController())->ajaxGetTourInfo(),
         'ajax_get_hdv_avail' => (new BookingController())->ajaxGetAvailableHdvs(),
-        
+
         // Quản lý Đánh giá
         'comments_list' => (new CommentController())->listComments(),
         'comment_add_form' => (new CommentController())->showAddForm(),
         'comment_add' => (new CommentController())->addComment(),
         'comment_delete' => (new CommentController())->deleteComment(),
         'comment_detail' => (new CommentController())->detailComment(),
-        
+
         // Nhật ký Tour
         'diary_list' => (new TourDiaryController())->listDiary(),
         'diary_manage' => (new TourDiaryController())->manageDiary(),
@@ -102,7 +103,7 @@ elseif ($role === 'hdv') {
         'checkin_all' => (new CheckinController())->checkinAll(),
         'diary_add' => (new TourDiaryController())->addDiary(),
         'diary_edit' => (new TourDiaryController())->editDiary(),
-        
+
         default => (new HdvAppController())->index(),
     };
 
