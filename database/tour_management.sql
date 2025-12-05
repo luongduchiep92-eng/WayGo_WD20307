@@ -1,343 +1,918 @@
-    CREATE DATABASE IF NOT EXISTS tour_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE tour_management_1;
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Dec 05, 2025 at 08:22 AM
+-- Server version: 8.0.30
+-- PHP Version: 8.1.10
 
--- 2. Bảng tours
-CREATE TABLE tours (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ten_tour VARCHAR(255) NOT NULL,
-    loai_tour ENUM('Trong nước','Quốc tế','Theo yêu cầu') NOT NULL,
-    dia_diem VARCHAR(255) NOT NULL,
-    thoi_gian VARCHAR(100),
-    gia_tour DECIMAL(12,2),
-    mo_ta TEXT,
-    ngay_khoi_hanh DATE,
-    phuong_tien VARCHAR(100),
-    so_nguoi_toi_da INT,
-    status ENUM('Hoạt động','Đang tạm dừng','Hủy') DEFAULT 'Hoạt động'
-);
-
--- 3. Bảng huong_dan_viens
-CREATE TABLE huong_dan_viens (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ho_ten VARCHAR(255) NOT NULL,
-    avatar VARCHAR(255),
-    ngay_sinh DATE,
-    so_dien_thoai VARCHAR(20),
-    email VARCHAR(100),
-    chung_chi VARCHAR(255),
-    ngon_ngu VARCHAR(100),
-    kinh_nghiem_nam INT,
-    loai_hdv ENUM('Nội địa','Quốc tế'),
-    suc_khoe VARCHAR(50),
-    danh_gia VARCHAR(255)
-);
-
--- 4. Bảng tour_images
-CREATE TABLE tour_images (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    image_path VARCHAR(255) NOT NULL,
-    mo_ta VARCHAR(255),
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
-);
-
--- 5. Bảng tour_hdv (N-N: tour ↔ HDV)
-CREATE TABLE tour_hdv (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    hdv_id INT NOT NULL,
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
-    FOREIGN KEY (hdv_id) REFERENCES huong_dan_viens(id) ON DELETE CASCADE
-);
-
--- 6. Bảng suppliers (nhà cung cấp: khách sạn, nhà hàng, vận chuyển)
-CREATE TABLE suppliers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    type ENUM('Nhà hàng','Khách sạn','Vận chuyển') NOT NULL,
-    phone VARCHAR(20),
-    email VARCHAR(255),
-    address VARCHAR(255),
-    rating INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 7. Bảng tour_suppliers (N-N: tour ↔ nhà cung cấp)
-CREATE TABLE tour_suppliers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    service_note VARCHAR(255),
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE
-);
-
--- 8. Bảng bookings (đặt tour, quản lý HDV + khách)
-CREATE TABLE bookings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    hdv_id INT,
-    customer_name VARCHAR(255),
-    customer_phone VARCHAR(20),
-    so_luong INT,
-    tong_tien DECIMAL(12,2),
-    status ENUM('Chờ xử lý','Đã cọc','Hoàn tất','Hủy') DEFAULT 'Chờ xử lý',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
-    FOREIGN KEY (hdv_id) REFERENCES huong_dan_viens(id) ON DELETE SET NULL
-);
-
--- 9. Bảng booking_customers (danh sách khách tham gia)
-CREATE TABLE booking_customers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
-    ho_ten VARCHAR(255),
-    nam_sinh INT,
-    CCCD VARCHAR(100),
-    ghi_chu TEXT,
-    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
-);
-
--- 10. Bảng hotel_rooms (phân phòng khách sạn)
-CREATE TABLE hotel_rooms (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_customer_id INT NOT NULL,
-    room_type ENUM('Đơn','Đôi','Gia đình'),
-    note TEXT,
-    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
-);
-
--- 11. Bảng customer_checkin (checkin khách)
-CREATE TABLE customer_checkin (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_customer_id INT NOT NULL,
-    status ENUM('Có mặt','Vắng mặt') DEFAULT 'Có mặt',
-    checkin_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_customer_id) REFERENCES booking_customers(id) ON DELETE CASCADE
-);
-
--- 12. Bảng tour_schedule_days (lịch trình từng ngày)
-CREATE TABLE tour_schedule_days (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tour_id INT NOT NULL,
-    ngay_thu INT NOT NULL,
-    tieu_de VARCHAR(255),
-    mo_ta TEXT,
-    FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
-);
-CREATE TABLE comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    guest_name VARCHAR(255) NOT NULL,
-    supplier_name VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    rating TINYINT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
--- 13. Bảng tour_schedule_activities (hoạt động chi tiết từng ngày)
-CREATE TABLE tour_schedule_activities (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    day_id INT NOT NULL,
-    thoi_gian_bat_dau TIME,
-    thoi_gian_ket_thuc TIME,
-    dia_diem VARCHAR(255),
-    hoat_dong TEXT,
-    hinh_anh VARCHAR(255),
-    FOREIGN KEY (day_id) REFERENCES tour_schedule_days(id) ON DELETE CASCADE
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-INSERT INTO tours (ten_tour, loai_tour, dia_diem, thoi_gian, gia_tour, mo_ta, ngay_khoi_hanh, phuong_tien, so_nguoi_toi_da) VALUES
-('Tour Đà Lạt mộng mơ', 'Trong nước', 'Đà Lạt', '3N2Đ', 3500000, 'Tham quan Thung Lũng Tình Yêu, Langbiang, chợ đêm.', '2025-12-10', 'Xe du lịch', 30),
-('Tour Phú Quốc nghỉ dưỡng', 'Trong nước', 'Phú Quốc', '4N3Đ', 5200000, 'Tham quan Vinpearl, Bãi Sao, Dinh Cậu.', '2025-12-15', 'Máy bay', 25),
-('Tour Hà Nội – Ninh Bình', 'Trong nước', 'Hà Nội, Ninh Bình', '2N1Đ', 1800000, 'Khám phá Tràng An, chùa Bái Đính.', '2025-11-25', 'Xe du lịch', 40),
-('Tour Singapore – Malaysia', 'Quốc tế', 'Singapore, Malaysia', '5N4Đ', 11500000, 'Khám phá Marina Bay, tháp đôi Petronas.', '2026-01-05', 'Máy bay', 20),
-('Tour Thái Lan – Bangkok – Pattaya', 'Quốc tế', 'Bangkok, Pattaya', '5N4Đ', 8900000, 'Tham quan Hoàng cung, Safari World.', '2026-02-01', 'Máy bay', 25),
-('Tour Nhật Bản ngắm hoa anh đào', 'Quốc tế', 'Tokyo, Osaka', '6N5Đ', 32000000, 'Trải nghiệm văn hóa Nhật, ngắm hoa anh đào.', '2026-03-20', 'Máy bay', 15),
-('Tour miền Tây sông nước', 'Trong nước', 'Cần Thơ, Mỹ Tho', '2N1Đ', 1500000, 'Trải nghiệm chợ nổi Cái Răng, vườn trái cây.', '2025-11-20', 'Xe du lịch', 35),
-('Tour Đà Nẵng – Hội An', 'Trong nước', 'Đà Nẵng, Hội An', '3N2Đ', 2800000, 'Tham quan Cầu Rồng, phố cổ Hội An.', '2025-12-05', 'Xe du lịch', 30),
-('Tour Châu Âu 5 nước', 'Quốc tế', 'Pháp, Đức, Ý, Thụy Sĩ, Hà Lan', '10N9Đ', 65000000, 'Du lịch các thành phố nổi tiếng châu Âu.', '2026-04-01', 'Máy bay', 15),
-('Tour theo yêu cầu công ty ABC', 'Theo yêu cầu', 'Đà Nẵng – Huế – Quảng Bình', '4N3Đ', 7200000, 'Tour thiết kế riêng cho đoàn công ty.', '2025-12-20', 'Xe du lịch', 40);
+--
+-- Database: `tour_management_1`
+--
 
-INSERT INTO huong_dan_viens (ho_ten, avatar, ngay_sinh, so_dien_thoai, email, chung_chi, ngon_ngu, kinh_nghiem_nam, loai_hdv, suc_khoe, danh_gia) VALUES
-('Nguyễn Văn An', 'uploads/hdv/an.jpg', '1990-05-12', '0905123456', 'an@tour.vn', 'Chứng chỉ HDV quốc gia', 'Tiếng Việt', 8, 'Nội địa', 'Tốt', 'Rất tốt'),
-('Lê Thị Bình', 'uploads/hdv/binh.jpg', '1988-09-23', '0933123456', 'binh@tour.vn', 'Chứng chỉ HDV quốc tế', 'Anh, Thái', 10, 'Quốc tế', 'Tốt', 'Xuất sắc'),
-('Trần Quốc Cường', 'uploads/hdv/cuong.jpg', '1992-07-11', '0978123456', 'cuong@tour.vn', 'Chứng chỉ HDV du lịch', 'Tiếng Việt', 5, 'Nội địa', 'Tốt', 'Khá'),
-('Phạm Thị Dung', 'uploads/hdv/dung.jpg', '1995-03-09', '0902123456', 'dung@tour.vn', 'HDV quốc tế', 'Anh, Nhật', 6, 'Quốc tế', 'Tốt', 'Tốt'),
-('Vũ Đức Hùng', 'uploads/hdv/hung.jpg', '1987-01-05', '0981123456', 'hung@tour.vn', 'HDV quốc gia', 'Việt, Anh', 12, 'Quốc tế', 'Tốt', 'Xuất sắc'),
-('Nguyễn Mai Lan', 'uploads/hdv/lan.jpg', '1996-12-21', '0909876543', 'lan@tour.vn', 'HDV nội địa', 'Việt', 4, 'Nội địa', 'Tốt', 'Tốt'),
-('Hoàng Văn Minh', 'uploads/hdv/minh.jpg', '1991-06-10', '0933123123', 'minh@tour.vn', 'HDV du lịch', 'Anh, Trung', 9, 'Quốc tế', 'Tốt', 'Xuất sắc'),
-('Phan Thị Ngọc', 'uploads/hdv/ngoc.jpg', '1993-02-17', '0912333444', 'ngoc@tour.vn', 'HDV nội địa', 'Việt', 7, 'Nội địa', 'Tốt', 'Rất tốt'),
-('Đỗ Văn Quân', 'uploads/hdv/quan.jpg', '1994-08-05', '0903344556', 'quan@tour.vn', 'HDV quốc tế', 'Anh, Hàn', 6, 'Quốc tế', 'Tốt', 'Tốt'),
-('Bùi Thị Trang', 'uploads/hdv/trang.jpg', '1998-04-30', '0977888999', 'trang@tour.vn', 'HDV nội địa', 'Việt', 3, 'Nội địa', 'Tốt', 'Khá');
+-- --------------------------------------------------------
 
-INSERT INTO tour_images (tour_id, image_path, mo_ta) VALUES
-(1, 'uploads/tours/dalat1.jpg', 'Thung lũng Tình Yêu'),
-(1, 'uploads/tours/dalat2.jpg', 'Đồi chè Cầu Đất'),
-(1, 'uploads/tours/dalat3.jpg', 'Chợ đêm Đà Lạt'),
-(2, 'uploads/tours/phuquoc1.jpg', 'Bãi Sao Phú Quốc'),
-(2, 'uploads/tours/phuquoc2.jpg', 'Vinpearl Safari'),
-(3, 'uploads/tours/ninhbinh1.jpg', 'Tràng An Ninh Bình'),
-(3, 'uploads/tours/ninhbinh2.jpg', 'Chùa Bái Đính'),
-(4, 'uploads/tours/singapore1.jpg', 'Marina Bay Sands'),
-(5, 'uploads/tours/thailan1.jpg', 'Hoàng cung Bangkok'),
-(6, 'uploads/tours/nhatban1.jpg', 'Hoa anh đào Tokyo'),
-(7, 'uploads/tours/mientay1.jpg', 'Chợ nổi Cái Răng'),
-(8, 'uploads/tours/hoian1.jpg', 'Phố cổ Hội An về đêm'),
-(9, 'uploads/tours/chauau1.jpg', 'Tháp Eiffel - Paris'),
-(10, 'uploads/tours/congtyabc1.jpg', 'Đoàn công ty tại Huế');
+--
+-- Table structure for table `bookings`
+--
 
-INSERT INTO tour_hdv (tour_id, hdv_id) VALUES
-(1, 1),
-(2, 8),
-(3, 3),
-(4, 2),
-(5, 5),
-(6, 7),
-(7, 6),
-(8, 8),
-(9, 4),
-(10, 9);
+CREATE TABLE `bookings` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `hdv_id` int DEFAULT NULL,
+  `customer_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `customer_phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phuong_tien` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `so_luong` int DEFAULT NULL,
+  `tong_tien` decimal(12,2) DEFAULT NULL,
+  `status` enum('Chờ xử lý','Đã cọc','Hoàn tất','Hủy') COLLATE utf8mb4_unicode_ci DEFAULT 'Chờ xử lý',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `approved_by` int DEFAULT NULL,
+  `approved_at` datetime DEFAULT NULL,
+  `hotel_supplier_id` int DEFAULT NULL,
+  `restaurant_supplier_id` int DEFAULT NULL,
+  `chi_phi_phat_sinh` decimal(12,2) DEFAULT '0.00',
+  `ly_do_phat_sinh` text COLLATE utf8mb4_unicode_ci,
+  `tien_da_coc` decimal(12,2) DEFAULT '0.00'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- - Ngày 1: Khám phá trung tâm Đà Lạt
-INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
-VALUES (1, 1, 'Khám phá trung tâm Đà Lạt', 'Tham quan các điểm nổi tiếng và thưởng thức ẩm thực Đà Lạt.');
+--
+-- Dumping data for table `bookings`
+--
 
-INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh) VALUES
-(1, '08:00:00', '10:00:00', 'Thung lũng Tình Yêu', 'Tham quan và chụp ảnh tại Thung lũng Tình Yêu', 'uploads/tours/dalat1.jpg'),
-(1, '10:30:00', '12:00:00', 'Nhà hàng Cơm Niêu Đà Lạt', 'Dùng bữa trưa tại nhà hàng địa phương', NULL),
-(1, '13:30:00', '15:00:00', 'Quán Cafe Mê Linh', 'Thưởng thức cà phê và ngắm cảnh hồ Tuyền Lâm', NULL),
-(1, '16:00:00', '18:00:00', 'Chợ đêm Đà Lạt', 'Dạo chợ đêm và mua sắm đặc sản địa phương', 'uploads/tours/dalat3.jpg');
+INSERT INTO `bookings` (`id`, `tour_id`, `hdv_id`, `customer_name`, `customer_phone`, `phuong_tien`, `so_luong`, `tong_tien`, `status`, `created_at`, `created_by`, `approved_by`, `approved_at`, `hotel_supplier_id`, `restaurant_supplier_id`, `chi_phi_phat_sinh`, `ly_do_phat_sinh`, `tien_da_coc`) VALUES
+(3, 1, 2, 'Nguyễn Văn A', '0909111222', NULL, 2, '7000000.00', 'Đã cọc', '2025-12-05 08:14:38', NULL, NULL, NULL, NULL, NULL, '0.00', NULL, '0.00'),
+(4, 2, 1, 'Trần Thị B', '0909333444', NULL, 4, '23960000.00', 'Hoàn tất', '2025-12-05 08:14:38', NULL, NULL, NULL, NULL, NULL, '0.00', NULL, '0.00'),
+(5, 1, 2, 'Nguyễn Văn A', '0909111222', NULL, 2, '7000000.00', 'Đã cọc', '2025-12-05 08:14:39', NULL, NULL, NULL, NULL, NULL, '0.00', NULL, '0.00'),
+(6, 2, 1, 'Trần Thị B', '0909333444', NULL, 4, '23960000.00', 'Hoàn tất', '2025-12-05 08:14:39', NULL, NULL, NULL, NULL, NULL, '0.00', NULL, '0.00');
 
---  Ngày 2: Langbiang – Vườn hoa Đà Lạt
-INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
-VALUES (1, 2, 'Khám phá vùng ven Đà Lạt', 'Tham quan Langbiang, vườn hoa Đà Lạt và hồ Xuân Hương.');
+-- --------------------------------------------------------
 
-INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh) VALUES
-(2, '08:00:00', '10:30:00', 'Núi Langbiang', 'Leo núi và ngắm toàn cảnh Đà Lạt', NULL),
-(2, '11:00:00', '12:30:00', 'Nhà hàng Hoa Đà Lạt', 'Dùng bữa trưa tại nhà hàng địa phương', NULL),
-(2, '13:30:00', '16:00:00', 'Vườn hoa Thành phố', 'Tham quan và chụp ảnh tại vườn hoa nổi tiếng', NULL),
-(2, '18:30:00', '20:00:00', 'Nhà hàng Memory', 'Thưởng thức bữa tối và nghe nhạc acoustic', NULL);
+--
+-- Table structure for table `booking_customers`
+--
 
---  Ngày 3: Tự do tham quan và mua sắm
-INSERT INTO tour_schedule_days (tour_id, ngay_thu, tieu_de, mo_ta)
-VALUES (1, 3, 'Tự do tham quan và mua sắm', 'Mua quà lưu niệm, nghỉ ngơi trước khi về.');
+CREATE TABLE `booking_customers` (
+  `id` int NOT NULL,
+  `booking_id` int NOT NULL,
+  `ho_ten` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nam_sinh` int DEFAULT NULL,
+  `CCCD` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ghi_chu` text COLLATE utf8mb4_unicode_ci,
+  `tuoi` int DEFAULT NULL,
+  `gioi_tinh` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `so_dien_thoai` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gia_tien` decimal(12,2) DEFAULT '0.00',
+  `checkin_status` enum('Chưa checkin','Có mặt','Vắng mặt','Đến muộn') COLLATE utf8mb4_unicode_ci DEFAULT 'Chưa checkin',
+  `checkin_note` text COLLATE utf8mb4_unicode_ci,
+  `checkin_time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO tour_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong, hinh_anh) VALUES
-(3, '08:00:00', '11:00:00', 'Chợ Đà Lạt', 'Tự do mua sắm đặc sản và quà lưu niệm', NULL),
-(3, '11:30:00', '13:00:00', 'Nhà hàng Hương Rừng', 'Dùng bữa trưa trước khi về', NULL),
-(3, '13:30:00', '15:00:00', 'Khách sạn', 'Thu dọn hành lý và trả phòng', NULL);
+-- --------------------------------------------------------
 
-INSERT INTO suppliers (name, phone, email, address)
-VALUES
-('Công ty Du Lịch Việt', '0909123456', 'contact@dulichviet.com', '123 Nguyễn Trãi, Quận 1, TP.HCM'),
-('Saigon Tourist', '0911222333', 'info@saigontourist.vn', '45 Lê Lợi, Quận 1, TP.HCM'),
-('Vietnam Travel Group', '0988777666', 'support@vietnamtravel.com', '98 Trần Hưng Đạo, Hoàn Kiếm, Hà Nội'),
-('Hà Nội Tourist', '0933445566', 'sales@hanoitourist.vn', '12 Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội'),
-('Asia Tour Service', '0977112233', 'booking@asiatour.com', '56 Võ Văn Tần, Quận 3, TP.HCM'),
-('Fiditour Travel', '0908112233', 'info@fiditour.com', '129 Nguyễn Huệ, Quận 1, TP.HCM'),
-('Bến Thành Tourist', '0933778899', 'contact@benthanhtourist.vn', '86 Nguyễn Trãi, Quận 1, TP.HCM'),
-('An Travel Agency', '0912555666', 'service@antravel.vn', '22 Lý Thường Kiệt, Hà Nội'),
-('Hoàng Gia Travel', '0981667788', 'hoanggia@travel.vn', '55 Phan Đình Phùng, Đà Nẵng'),
-('Sunshine Holiday', '0976223344', 'booking@sunshineholiday.vn', '33 Nguyễn Văn Linh, Đà Nẵng');
-ALTER TABLE booking_customers ADD phone VARCHAR(50) AFTER ho_ten;
+--
+-- Table structure for table `booking_schedule_activities`
+--
 
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    role ENUM('admin', 'staff', 'user') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE `booking_schedule_activities` (
+  `id` int NOT NULL,
+  `day_id` int NOT NULL,
+  `thoi_gian_bat_dau` time DEFAULT NULL,
+  `thoi_gian_ket_thuc` time DEFAULT NULL,
+  `dia_diem` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hoat_dong` text COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 2. Cập nhật bảng Booking Customers (Thêm tuổi, giới tính, giá từng người)
-ALTER TABLE booking_customers
-ADD COLUMN tuoi INT,
-ADD COLUMN gioi_tinh VARCHAR(10),
-ADD COLUMN so_dien_thoai VARCHAR(20),
-ADD COLUMN gia_tien DECIMAL(12,2) DEFAULT 0; -- Giá vé của riêng người này
+-- --------------------------------------------------------
 
--- 3. Cập nhật bảng Bookings (Thêm chi phí phát sinh, cọc)
-ALTER TABLE bookings
-ADD COLUMN chi_phi_phat_sinh DECIMAL(12,2) DEFAULT 0,
-ADD COLUMN ly_do_phat_sinh TEXT,
-ADD COLUMN tien_da_coc DECIMAL(12,2) DEFAULT 0;
+--
+-- Table structure for table `booking_schedule_days`
+--
 
--- 4. Tạo bảng Lịch sử thanh toán (Để biết ai đã nhập tiền cọc)
-CREATE TABLE IF NOT EXISTS payment_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
-    so_tien DECIMAL(12,2) NOT NULL,
-    loai_thanh_toan ENUM('Cọc', 'Thanh toán đợt 2', 'Hoàn tất', 'Hoàn tiền') DEFAULT 'Cọc',
-    ghi_chu TEXT,
-    nguoi_thu_tien VARCHAR(100), -- Tên user admin/staff đã thu
-    ngay_thu TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
-);
-USE tour_management_1;
+CREATE TABLE `booking_schedule_days` (
+  `id` int NOT NULL,
+  `booking_id` int NOT NULL,
+  `ngay_thu` int NOT NULL,
+  `tieu_de` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mo_ta` text COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 1. Tạo bảng Lịch trình theo ngày của Booking
-CREATE TABLE IF NOT EXISTS booking_schedule_days (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
-    ngay_thu INT NOT NULL,
-    tieu_de VARCHAR(255),
-    mo_ta TEXT,
-    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
-);
+-- --------------------------------------------------------
 
--- 2. Tạo bảng Hoạt động chi tiết của Booking (nếu cần chi tiết từng giờ)
--- Lưu ý: Code hiện tại đang lưu gộp vào schedule_days, nhưng tạo sẵn để tránh lỗi mở rộng sau này
-CREATE TABLE IF NOT EXISTS booking_schedule_activities (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    day_id INT NOT NULL,
-    thoi_gian_bat_dau TIME,
-    thoi_gian_ket_thuc TIME,
-    dia_diem VARCHAR(255),
-    hoat_dong TEXT,
-    FOREIGN KEY (day_id) REFERENCES booking_schedule_days(id) ON DELETE CASCADE
-);
-ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'staff', 'user', 'hdv') DEFAULT 'user';
-INSERT INTO users (username, password, full_name, email, role) 
-VALUES (
-    'binh_an', 
-    '$2y$10$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquii.V3ilJppDcv.fTkJK', -- Mật khẩu: 123
-    'Trần Bình An', 
-    'binh_an@tour.vn', 
-    'hdv'
-);
-INSERT INTO huong_dan_viens (ho_ten, email, so_dien_thoai, loai_hdv) 
-VALUES ('Trần Bình An', 'binh_an@tour.vn', '0988777666', 'Nội địa');
-CREATE TABLE comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    guest_name VARCHAR(255) NOT NULL,
-    supplier_name VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    rating TINYINT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
--- Xóa dữ liệu cũ (nếu có) để tránh trùng lặp rác
-TRUNCATE TABLE comments;
+--
+-- Table structure for table `comments`
+--
 
--- Thêm dữ liệu đánh giá mẫu
-INSERT INTO comments (guest_name, supplier_name, content, rating, created_at) VALUES
--- 1. Khách từ Booking đánh giá NCC 'Saigon Tourist'
-('Nguyễn Văn A', 'Saigon Tourist', 'Dịch vụ đặt xe của bên này rất tốt, xe đời mới và tài xế lịch sự. Tuy nhiên giá hơi cao so với mặt bằng chung.', 4, '2023-10-06 09:00:00'),
+CREATE TABLE `comments` (
+  `id` int NOT NULL,
+  `guest_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `supplier_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rating` tinyint NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 2. Khách từ Booking đánh giá NCC 'Fiditour Travel'
-('Trần Thị B', 'Fiditour Travel', 'Khách sạn do Fiditour sắp xếp rất sạch sẽ, view biển đẹp đúng như quảng cáo. Rất hài lòng.', 5, '2023-10-11 14:30:00'),
+-- --------------------------------------------------------
 
--- 3. Khách từ Booking (Đoàn Cty) đánh giá NCC 'Hà Nội Tourist'
-('Lê Văn C', 'Hà Nội Tourist', 'Hướng dẫn viên địa phương kiến thức tốt, nhưng nhà hàng liên kết phục vụ đồ ăn hơi nguội.', 3, '2023-11-22 10:15:00'),
+--
+-- Table structure for table `customer_checkin`
+--
 
--- 4. Khách từ Booking Test HDV An đánh giá 'Asia Tour Service'
-('Nguyễn Thị Khách Hàng', 'Asia Tour Service', 'Chất lượng tour ổn định, không phát sinh chi phí vô lý. Sẽ ủng hộ lần sau.', 5, '2023-12-05 16:45:00'),
+CREATE TABLE `customer_checkin` (
+  `id` int NOT NULL,
+  `booking_customer_id` int NOT NULL,
+  `status` enum('Có mặt','Vắng mặt','Đã checkout') COLLATE utf8mb4_unicode_ci DEFAULT 'Có mặt',
+  `checkin_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `thoi_gian_ra` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 5. Đánh giá về NCC 'Công ty Du Lịch Việt'
-('Trần Văn Chồng', 'Công ty Du Lịch Việt', 'Xe di chuyển êm ái, bác tài vui tính. Điểm trừ là chờ đón ở sân bay hơi lâu.', 4, '2023-12-06 08:20:00'),
+-- --------------------------------------------------------
 
--- 6. Đánh giá tiêu cực để test bộ lọc 1-2 sao
-('Lê Văn Đoàn', 'Vietnam Travel Group', 'Thất vọng về thái độ phục vụ của nhân viên lễ tân khách sạn. Cần cải thiện ngay.', 2, '2023-12-15 19:30:00');2.3
--- ok
+--
+-- Table structure for table `hdv_lich_lam_viec`
+--
+
+CREATE TABLE `hdv_lich_lam_viec` (
+  `id` int NOT NULL,
+  `hdv_id` int NOT NULL,
+  `ngay` date NOT NULL,
+  `trang_thai` enum('Rảnh','Đi tour','Nghỉ phép') COLLATE utf8mb4_unicode_ci DEFAULT 'Rảnh',
+  `ghi_chu` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hdv_nghi`
+--
+
+CREATE TABLE `hdv_nghi` (
+  `id` int NOT NULL,
+  `hdv_id` int NOT NULL,
+  `ngay_nghi` date NOT NULL,
+  `ly_do` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotel_rooms`
+--
+
+CREATE TABLE `hotel_rooms` (
+  `id` int NOT NULL,
+  `booking_customer_id` int NOT NULL,
+  `room_type` enum('Đơn','Đôi','Gia đình','VIP') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note` text COLLATE utf8mb4_unicode_ci,
+  `trang_thai` enum('Chưa nhận phòng','Đã nhận phòng','Đã trả phòng') COLLATE utf8mb4_unicode_ci DEFAULT 'Chưa nhận phòng'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `huong_dan_viens`
+--
+
+CREATE TABLE `huong_dan_viens` (
+  `id` int NOT NULL,
+  `ho_ten` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngay_sinh` date DEFAULT NULL,
+  `so_dien_thoai` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `chung_chi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngon_ngu` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kinh_nghiem_nam` int DEFAULT NULL,
+  `loai_hdv` enum('Nội địa','Quốc tế') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `suc_khoe` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `danh_gia` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `huong_dan_viens`
+--
+
+INSERT INTO `huong_dan_viens` (`id`, `ho_ten`, `avatar`, `ngay_sinh`, `so_dien_thoai`, `email`, `chung_chi`, `ngon_ngu`, `kinh_nghiem_nam`, `loai_hdv`, `suc_khoe`, `danh_gia`) VALUES
+(1, 'Lê Thành Long', 'avatar1.jpg', '1990-05-15', '0909123456', 'long.hdv@travel.com', 'Thẻ Quốc Tế', 'Tiếng Anh, Tiếng Pháp', 7, 'Quốc tế', 'Tốt', 'Nhiệt tình, vui tính'),
+(2, 'Phạm Thu Hà', 'avatar2.jpg', '1995-10-20', '0909999888', 'ha.pham@travel.com', 'Thẻ Nội Địa', 'Tiếng Việt', 3, 'Nội địa', 'Tốt', 'Chu đáo, cẩn thận');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_history`
+--
+
+CREATE TABLE `payment_history` (
+  `id` int NOT NULL,
+  `booking_id` int NOT NULL,
+  `so_tien` decimal(12,2) NOT NULL,
+  `loai_thanh_toan` enum('Cọc','Thanh toán thêm','Thanh toán đợt 2','Hoàn tất','Hoàn tiền') COLLATE utf8mb4_unicode_ci DEFAULT 'Cọc',
+  `ghi_chu` text COLLATE utf8mb4_unicode_ci,
+  `nguoi_thu_tien` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngay_thu` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `suppliers`
+--
+
+CREATE TABLE `suppliers` (
+  `id` int NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` enum('Nhà hàng','Khách sạn','Vận chuyển') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rating` int DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `suppliers`
+--
+
+INSERT INTO `suppliers` (`id`, `name`, `type`, `phone`, `email`, `address`, `rating`, `created_at`) VALUES
+(1, 'Khách sạn Bamboo Sapa', 'Khách sạn', '02143888888', NULL, '18 Mường Hoa, Sapa', 4, '2025-12-05 08:18:46'),
+(2, 'Nhà hàng A Phủ', 'Nhà hàng', '0912345678', NULL, '15 Fansipan, Sapa', 5, '2025-12-05 08:18:46'),
+(3, 'Xe Sao Việt', 'Vận chuyển', '19006746', NULL, 'Hà Nội - Sapa', 4, '2025-12-05 08:18:46'),
+(4, 'Novotel Danang Premier', 'Khách sạn', '02363929999', NULL, '36 Bạch Đằng, Đà Nẵng', 5, '2025-12-05 08:18:46'),
+(5, 'Vietnam Airlines', 'Vận chuyển', '19001100', NULL, 'Sân bay Nội Bài', 5, '2025-12-05 08:18:46');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tours`
+--
+
+CREATE TABLE `tours` (
+  `id` int NOT NULL,
+  `ten_tour` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `loai_tour` enum('Trong nước','Quốc tế','Theo yêu cầu') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dia_diem` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thoi_gian` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gia_tour` decimal(12,2) DEFAULT NULL,
+  `mo_ta` text COLLATE utf8mb4_unicode_ci,
+  `ngay_khoi_hanh` date DEFAULT NULL,
+  `phuong_tien` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `so_nguoi_toi_da` int DEFAULT NULL,
+  `status` enum('Hoạt động','Đang tạm dừng','Hủy') COLLATE utf8mb4_unicode_ci DEFAULT 'Hoạt động'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tours`
+--
+
+INSERT INTO `tours` (`id`, `ten_tour`, `loai_tour`, `dia_diem`, `thoi_gian`, `gia_tour`, `mo_ta`, `ngay_khoi_hanh`, `phuong_tien`, `so_nguoi_toi_da`, `status`) VALUES
+(1, 'Hà Nội - Sapa - Fansipan - Cát Cát', 'Trong nước', 'Lào Cai', '3 Ngày 2 Đêm', '3500000.00', NULL, '2024-01-10', 'Xe giường nằm', 40, 'Hoạt động'),
+(2, 'Đà Nẵng - Hội An - Bà Nà - Huế', 'Trong nước', 'Đà Nẵng', '4 Ngày 3 Đêm', '5990000.00', NULL, '2024-01-15', 'Máy bay', 30, 'Hoạt động'),
+(3, 'Phú Quốc - Grand World - Địa Trung Hải', 'Trong nước', 'Kiên Giang', '3 Ngày 2 Đêm', '6500000.00', NULL, '2024-01-20', 'Máy bay', 25, 'Hoạt động'),
+(4, 'Hà Giang - Đồng Văn - Lũng Cú', 'Trong nước', 'Hà Giang', '3 Ngày 2 Đêm', '2800000.00', NULL, '2024-01-12', 'Ô tô du lịch', 20, 'Đang tạm dừng'),
+(5, 'Tour Xuyên Việt: Bắc - Trung - Nam', 'Trong nước', 'Toàn quốc', '10 Ngày 9 Đêm', '15000000.00', NULL, '2024-02-01', 'Máy bay + Ô tô', 15, 'Hoạt động'),
+(6, 'Hà Nội - Sapa - Fansipan - Cát Cát', 'Trong nước', 'Lào Cai', '3 Ngày 2 Đêm', '3500000.00', NULL, '2024-01-10', 'Xe giường nằm', 40, 'Hoạt động'),
+(7, 'Đà Nẵng - Hội An - Bà Nà - Huế', 'Trong nước', 'Đà Nẵng', '4 Ngày 3 Đêm', '5990000.00', NULL, '2024-01-15', 'Máy bay', 30, 'Hoạt động'),
+(8, 'Phú Quốc - Grand World - Địa Trung Hải', 'Trong nước', 'Kiên Giang', '3 Ngày 2 Đêm', '6500000.00', NULL, '2024-01-20', 'Máy bay', 25, 'Hoạt động'),
+(9, 'Hà Giang - Đồng Văn - Lũng Cú', 'Trong nước', 'Hà Giang', '3 Ngày 2 Đêm', '2800000.00', NULL, '2024-01-12', 'Ô tô du lịch', 20, 'Đang tạm dừng'),
+(10, 'Tour Xuyên Việt: Bắc - Trung - Nam', 'Trong nước', 'Toàn quốc', '10 Ngày 9 Đêm', '15000000.00', NULL, '2024-02-01', 'Máy bay + Ô tô', 15, 'Hoạt động');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tours_suppliers`
+--
+
+CREATE TABLE `tours_suppliers` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `supplier_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_diaries`
+--
+
+CREATE TABLE `tour_diaries` (
+  `id` int NOT NULL,
+  `booking_id` int NOT NULL,
+  `supplier_feedback` text COLLATE utf8mb4_unicode_ci,
+  `incidents` text COLLATE utf8mb4_unicode_ci,
+  `resolution` text COLLATE utf8mb4_unicode_ci,
+  `customer_feedback` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_hdv`
+--
+
+CREATE TABLE `tour_hdv` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `hdv_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_images`
+--
+
+CREATE TABLE `tour_images` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `image_path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mo_ta` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_restaurants`
+--
+
+CREATE TABLE `tour_restaurants` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `supplier_id` int NOT NULL,
+  `bua_an` enum('Sáng','Trưa','Tối') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngay` int NOT NULL,
+  `ghi_chu` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_schedule_activities`
+--
+
+CREATE TABLE `tour_schedule_activities` (
+  `id` int NOT NULL,
+  `day_id` int NOT NULL,
+  `thoi_gian_bat_dau` time DEFAULT NULL,
+  `thoi_gian_ket_thuc` time DEFAULT NULL,
+  `dia_diem` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hoat_dong` text COLLATE utf8mb4_unicode_ci,
+  `hinh_anh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tour_schedule_activities`
+--
+
+INSERT INTO `tour_schedule_activities` (`id`, `day_id`, `thoi_gian_bat_dau`, `thoi_gian_ket_thuc`, `dia_diem`, `hoat_dong`, `hinh_anh`) VALUES
+(1, 1, '06:00:00', '12:00:00', 'Cao tốc Nội Bài', 'Di chuyển bằng xe giường nằm Sao Việt', NULL),
+(2, 1, '14:00:00', '17:00:00', 'Núi Hàm Rồng', 'Tham quan vườn lan, cổng trời', NULL),
+(3, 2, '08:00:00', '12:00:00', 'Ga cáp treo', 'Đi cáp treo lên đỉnh Fansipan', NULL),
+(4, 2, '14:00:00', '17:00:00', 'Bản Cát Cát', 'Tìm hiểu văn hóa người H\'Mông', NULL),
+(5, 3, '09:00:00', '11:00:00', 'Chợ Sapa', 'Mua sắm đặc sản làm quà', NULL),
+(6, 4, '09:00:00', '11:00:00', 'Chùa Linh Ứng', 'Viếng Phật Bà Quan Âm', NULL),
+(7, 5, '08:00:00', '16:00:00', 'Bà Nà Hills', 'Tham quan Cầu Vàng, Làng Pháp', NULL),
+(8, 6, '15:00:00', '21:00:00', 'Hội An', 'Ăn cao lầu và đi thuyền sông Hoài', NULL),
+(9, 1, '06:00:00', '12:00:00', 'Cao tốc Nội Bài', 'Di chuyển bằng xe giường nằm Sao Việt', NULL),
+(10, 1, '14:00:00', '17:00:00', 'Núi Hàm Rồng', 'Tham quan vườn lan, cổng trời', NULL),
+(11, 2, '08:00:00', '12:00:00', 'Ga cáp treo', 'Đi cáp treo lên đỉnh Fansipan', NULL),
+(12, 2, '14:00:00', '17:00:00', 'Bản Cát Cát', 'Tìm hiểu văn hóa người H\'Mông', NULL),
+(13, 3, '09:00:00', '11:00:00', 'Chợ Sapa', 'Mua sắm đặc sản làm quà', NULL),
+(14, 4, '09:00:00', '11:00:00', 'Chùa Linh Ứng', 'Viếng Phật Bà Quan Âm', NULL),
+(15, 5, '08:00:00', '16:00:00', 'Bà Nà Hills', 'Tham quan Cầu Vàng, Làng Pháp', NULL),
+(16, 6, '15:00:00', '21:00:00', 'Hội An', 'Ăn cao lầu và đi thuyền sông Hoài', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_schedule_days`
+--
+
+CREATE TABLE `tour_schedule_days` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `ngay_thu` int NOT NULL,
+  `tieu_de` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mo_ta` text COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tour_schedule_days`
+--
+
+INSERT INTO `tour_schedule_days` (`id`, `tour_id`, `ngay_thu`, `tieu_de`, `mo_ta`) VALUES
+(1, 1, 1, 'Ngày 1: Hà Nội - Sapa - Hàm Rồng', 'Di chuyển lên Sapa, chiều leo núi Hàm Rồng'),
+(2, 1, 2, 'Ngày 2: Fansipan - Bản Cát Cát', 'Chinh phục nóc nhà Đông Dương'),
+(3, 1, 3, 'Ngày 3: Sapa - Hà Nội', 'Tự do mua sắm và trở về'),
+(4, 2, 1, 'Ngày 1: Đón sân bay - Sơn Trà', 'Xe đưa về khách sạn Novotel'),
+(5, 2, 2, 'Ngày 2: Bà Nà Hills', 'Vui chơi tại đường lên tiên cảnh'),
+(6, 2, 3, 'Ngày 3: Phố Cổ Hội An', 'Tham quan chùa Cầu, thả đèn hoa đăng'),
+(7, 2, 4, 'Ngày 4: Mua sắm - Tiễn sân bay', 'Ghé chợ Hàn và ra sân bay'),
+(8, 1, 1, 'Ngày 1: Hà Nội - Sapa - Hàm Rồng', 'Di chuyển lên Sapa, chiều leo núi Hàm Rồng'),
+(9, 1, 2, 'Ngày 2: Fansipan - Bản Cát Cát', 'Chinh phục nóc nhà Đông Dương'),
+(10, 1, 3, 'Ngày 3: Sapa - Hà Nội', 'Tự do mua sắm và trở về'),
+(11, 2, 1, 'Ngày 1: Đón sân bay - Sơn Trà', 'Xe đưa về khách sạn Novotel'),
+(12, 2, 2, 'Ngày 2: Bà Nà Hills', 'Vui chơi tại đường lên tiên cảnh'),
+(13, 2, 3, 'Ngày 3: Phố Cổ Hội An', 'Tham quan chùa Cầu, thả đèn hoa đăng'),
+(14, 2, 4, 'Ngày 4: Mua sắm - Tiễn sân bay', 'Ghé chợ Hàn và ra sân bay');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_suppliers`
+--
+
+CREATE TABLE `tour_suppliers` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `supplier_id` int NOT NULL,
+  `service_note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tour_supplier_schedule`
+--
+
+CREATE TABLE `tour_supplier_schedule` (
+  `id` int NOT NULL,
+  `tour_id` int NOT NULL,
+  `supplier_id` int NOT NULL,
+  `ngay_thu` int NOT NULL,
+  `loai_dich_vu` enum('Khách sạn','Nhà hàng','Vận chuyển') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ghi_chu` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int NOT NULL,
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `full_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role` enum('admin','staff','user','hdv') COLLATE utf8mb4_unicode_ci DEFAULT 'user',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`),
+  ADD KEY `hdv_id` (`hdv_id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `approved_by` (`approved_by`),
+  ADD KEY `fk_hotel_supplier` (`hotel_supplier_id`),
+  ADD KEY `fk_restaurant_supplier` (`restaurant_supplier_id`);
+
+--
+-- Indexes for table `booking_customers`
+--
+ALTER TABLE `booking_customers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_id` (`booking_id`);
+
+--
+-- Indexes for table `booking_schedule_activities`
+--
+ALTER TABLE `booking_schedule_activities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `day_id` (`day_id`);
+
+--
+-- Indexes for table `booking_schedule_days`
+--
+ALTER TABLE `booking_schedule_days`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_id` (`booking_id`);
+
+--
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `customer_checkin`
+--
+ALTER TABLE `customer_checkin`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_customer_id` (`booking_customer_id`);
+
+--
+-- Indexes for table `hdv_lich_lam_viec`
+--
+ALTER TABLE `hdv_lich_lam_viec`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hdv_id` (`hdv_id`);
+
+--
+-- Indexes for table `hdv_nghi`
+--
+ALTER TABLE `hdv_nghi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hdv_id` (`hdv_id`);
+
+--
+-- Indexes for table `hotel_rooms`
+--
+ALTER TABLE `hotel_rooms`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_customer_id` (`booking_customer_id`);
+
+--
+-- Indexes for table `huong_dan_viens`
+--
+ALTER TABLE `huong_dan_viens`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `payment_history`
+--
+ALTER TABLE `payment_history`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_id` (`booking_id`);
+
+--
+-- Indexes for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tours`
+--
+ALTER TABLE `tours`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tours_suppliers`
+--
+ALTER TABLE `tours_suppliers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
+
+--
+-- Indexes for table `tour_diaries`
+--
+ALTER TABLE `tour_diaries`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_id` (`booking_id`);
+
+--
+-- Indexes for table `tour_hdv`
+--
+ALTER TABLE `tour_hdv`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`),
+  ADD KEY `hdv_id` (`hdv_id`);
+
+--
+-- Indexes for table `tour_images`
+--
+ALTER TABLE `tour_images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`);
+
+--
+-- Indexes for table `tour_restaurants`
+--
+ALTER TABLE `tour_restaurants`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
+
+--
+-- Indexes for table `tour_schedule_activities`
+--
+ALTER TABLE `tour_schedule_activities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `day_id` (`day_id`);
+
+--
+-- Indexes for table `tour_schedule_days`
+--
+ALTER TABLE `tour_schedule_days`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`);
+
+--
+-- Indexes for table `tour_suppliers`
+--
+ALTER TABLE `tour_suppliers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
+
+--
+-- Indexes for table `tour_supplier_schedule`
+--
+ALTER TABLE `tour_supplier_schedule`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_id` (`tour_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `booking_customers`
+--
+ALTER TABLE `booking_customers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `booking_schedule_activities`
+--
+ALTER TABLE `booking_schedule_activities`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `booking_schedule_days`
+--
+ALTER TABLE `booking_schedule_days`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `customer_checkin`
+--
+ALTER TABLE `customer_checkin`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `hdv_lich_lam_viec`
+--
+ALTER TABLE `hdv_lich_lam_viec`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `hdv_nghi`
+--
+ALTER TABLE `hdv_nghi`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `hotel_rooms`
+--
+ALTER TABLE `hotel_rooms`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `huong_dan_viens`
+--
+ALTER TABLE `huong_dan_viens`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `payment_history`
+--
+ALTER TABLE `payment_history`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `tours`
+--
+ALTER TABLE `tours`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `tours_suppliers`
+--
+ALTER TABLE `tours_suppliers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `tour_diaries`
+--
+ALTER TABLE `tour_diaries`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `tour_hdv`
+--
+ALTER TABLE `tour_hdv`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tour_images`
+--
+ALTER TABLE `tour_images`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tour_restaurants`
+--
+ALTER TABLE `tour_restaurants`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `tour_schedule_activities`
+--
+ALTER TABLE `tour_schedule_activities`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `tour_schedule_days`
+--
+ALTER TABLE `tour_schedule_days`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `tour_suppliers`
+--
+ALTER TABLE `tour_suppliers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `tour_supplier_schedule`
+--
+ALTER TABLE `tour_supplier_schedule`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`hdv_id`) REFERENCES `huong_dan_viens` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `bookings_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `huong_dan_viens` (`id`),
+  ADD CONSTRAINT `bookings_ibfk_4` FOREIGN KEY (`approved_by`) REFERENCES `huong_dan_viens` (`id`),
+  ADD CONSTRAINT `bookings_ibfk_5` FOREIGN KEY (`hotel_supplier_id`) REFERENCES `suppliers` (`id`),
+  ADD CONSTRAINT `bookings_ibfk_6` FOREIGN KEY (`restaurant_supplier_id`) REFERENCES `suppliers` (`id`),
+  ADD CONSTRAINT `fk_hotel_supplier` FOREIGN KEY (`hotel_supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_restaurant_supplier` FOREIGN KEY (`restaurant_supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `booking_customers`
+--
+ALTER TABLE `booking_customers`
+  ADD CONSTRAINT `booking_customers_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `booking_schedule_activities`
+--
+ALTER TABLE `booking_schedule_activities`
+  ADD CONSTRAINT `booking_schedule_activities_ibfk_1` FOREIGN KEY (`day_id`) REFERENCES `booking_schedule_days` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `booking_schedule_days`
+--
+ALTER TABLE `booking_schedule_days`
+  ADD CONSTRAINT `booking_schedule_days_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `customer_checkin`
+--
+ALTER TABLE `customer_checkin`
+  ADD CONSTRAINT `customer_checkin_ibfk_1` FOREIGN KEY (`booking_customer_id`) REFERENCES `booking_customers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `hdv_lich_lam_viec`
+--
+ALTER TABLE `hdv_lich_lam_viec`
+  ADD CONSTRAINT `hdv_lich_lam_viec_ibfk_1` FOREIGN KEY (`hdv_id`) REFERENCES `huong_dan_viens` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `hdv_nghi`
+--
+ALTER TABLE `hdv_nghi`
+  ADD CONSTRAINT `hdv_nghi_ibfk_1` FOREIGN KEY (`hdv_id`) REFERENCES `huong_dan_viens` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `hotel_rooms`
+--
+ALTER TABLE `hotel_rooms`
+  ADD CONSTRAINT `hotel_rooms_ibfk_1` FOREIGN KEY (`booking_customer_id`) REFERENCES `booking_customers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payment_history`
+--
+ALTER TABLE `payment_history`
+  ADD CONSTRAINT `payment_history_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tours_suppliers`
+--
+ALTER TABLE `tours_suppliers`
+  ADD CONSTRAINT `tours_suppliers_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tours_suppliers_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_diaries`
+--
+ALTER TABLE `tour_diaries`
+  ADD CONSTRAINT `tour_diaries_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_hdv`
+--
+ALTER TABLE `tour_hdv`
+  ADD CONSTRAINT `tour_hdv_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tour_hdv_ibfk_2` FOREIGN KEY (`hdv_id`) REFERENCES `huong_dan_viens` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_images`
+--
+ALTER TABLE `tour_images`
+  ADD CONSTRAINT `tour_images_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_restaurants`
+--
+ALTER TABLE `tour_restaurants`
+  ADD CONSTRAINT `tour_restaurants_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tour_restaurants_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_schedule_activities`
+--
+ALTER TABLE `tour_schedule_activities`
+  ADD CONSTRAINT `tour_schedule_activities_ibfk_1` FOREIGN KEY (`day_id`) REFERENCES `tour_schedule_days` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_schedule_days`
+--
+ALTER TABLE `tour_schedule_days`
+  ADD CONSTRAINT `tour_schedule_days_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_suppliers`
+--
+ALTER TABLE `tour_suppliers`
+  ADD CONSTRAINT `tour_suppliers_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tour_suppliers_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_supplier_schedule`
+--
+ALTER TABLE `tour_supplier_schedule`
+  ADD CONSTRAINT `tour_supplier_schedule_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tour_supplier_schedule_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
