@@ -3,22 +3,22 @@ require_once "BaseModel.php";
 
 class UserModel extends BaseModel {
     
-    // Hàm đăng ký (Đã nâng cấp)
     public function register($data) {
         try {
-            $this->pdo->beginTransaction(); // Bắt đầu giao dịch an toàn
+            $this->pdo->beginTransaction(); 
 
-            // 1. Kiểm tra username hoặc email đã tồn tại chưa
+            // 1. Kiểm tra username/email tồn tại chưa
             $stmt = $this->pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
             $stmt->execute([$data['username'], $data['email']]);
             if ($stmt->rowCount() > 0) {
-                return false; // Đã tồn tại
+                return false; 
             }
 
-            // 2. Xác định role (chỉ cho phép user hoặc hdv, cấm admin)
-            $role = ($data['role'] === 'hdv') ? 'hdv' : 'user';
+            // 2. Lấy role từ form (chỉ chấp nhận: admin, staff, hdv)
+            $allowed_roles = ['admin', 'staff', 'hdv'];
+            $role = in_array($data['role'], $allowed_roles) ? $data['role'] : 'staff'; // Mặc định là staff nếu sai
 
-            // 3. Tạo User
+            // 3. Tạo User trong bảng users
             $sqlUser = "INSERT INTO users (username, password, full_name, email, role) VALUES (?, ?, ?, ?, ?)";
             $stmtUser = $this->pdo->prepare($sqlUser);
             $stmtUser->execute([
@@ -29,7 +29,7 @@ class UserModel extends BaseModel {
                 $role
             ]);
 
-            // 4. [QUAN TRỌNG] Nếu là HDV -> Tự tạo hồ sơ trong bảng huong_dan_viens
+            // 4. [LOGIC QUAN TRỌNG] Chỉ tạo hồ sơ bên bảng huong_dan_viens nếu role là 'hdv'
             if ($role === 'hdv') {
                 $sqlHdv = "INSERT INTO huong_dan_viens (ho_ten, email, so_dien_thoai, loai_hdv, kinh_nghiem_nam, suc_khoe) 
                            VALUES (?, ?, ?, 'Nội địa', 0, 'Tốt')";
@@ -37,7 +37,7 @@ class UserModel extends BaseModel {
                 $stmtHdv->execute([
                     $data['full_name'],
                     $data['email'],
-                    $data['phone'] // Lấy từ form
+                    $data['phone']
                 ]);
             }
 
@@ -46,7 +46,7 @@ class UserModel extends BaseModel {
 
         } catch (Exception $e) {
             $this->pdo->rollBack();
-            return false;
+            return false; // Hoặc throw $e để debug
         }
     }
 
@@ -55,11 +55,11 @@ class UserModel extends BaseModel {
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
     public function getHdvIdByEmail($email) {
-        // Hàm này rất quan trọng để lấy ID thực của HDV
         $stmt = $this->pdo->prepare("SELECT id FROM huong_dan_viens WHERE email = ?");
         $stmt->execute([$email]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['id'] : null;
-}
+    }
 }
