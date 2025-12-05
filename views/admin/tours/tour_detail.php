@@ -97,7 +97,7 @@
             <div class="card card-modern mb-4" style="height: auto !important; min-height: 0;">
             <div class="card-header bg-white fw-bold text-primary"><i class="fa-solid fa-circle-info"></i> Giới thiệu tour</div>
                 <div class="card-body text-secondary" style="line-height: 1.6;">
-                    <?= nl2br($tour->mo_ta) ?>
+                    <?= nl2br($tour->mo_ta ?? '') ?>
                 </div>
             </div>
 
@@ -109,7 +109,7 @@
                             <div class="timeline-step">
                                 <div class="timeline-point"></div>
                                 <h5 class="fw-bold text-dark">Ngày <?= $day->ngay_thu ?>: <?= $day->tieu_de ?></h5>
-                                <p class="text-muted fst-italic mb-3"><?= nl2br($day->mo_ta) ?></p>
+                                <p class="text-muted fst-italic mb-3"><?= nl2br($day->mo_ta ?? '') ?></p>
                                 
                                 <?php if(!empty($day->activities)): ?>
                                     <div class="ms-2">
@@ -160,10 +160,6 @@
                 <div class="card-header bg-primary text-white fw-bold text-center">THÔNG TIN TÓM TẮT</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush mb-3">
-                        <!-- <li class="list-group-item d-flex justify-content-between px-0">
-                            <span class="text-muted"><i class="fa-regular fa-calendar"></i> Khởi hành:</span>
-                            <span class="fw-bold"><?= date('d/m/Y', strtotime($tour->ngay_khoi_hanh)) ?></span> -->
-                        </li>
                         <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted"><i class="fa-solid fa-hourglass-half"></i> Thời gian:</span>
                             <span class="fw-bold"><?= $tour->thoi_gian ?></span>
