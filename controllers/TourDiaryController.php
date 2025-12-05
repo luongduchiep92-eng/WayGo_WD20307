@@ -6,43 +6,55 @@ class TourDiaryController {
         $this->model = new TourDiaryModel();
     }
 
+    // 1. Hiển thị danh sách các tour ĐÃ CÓ nhật ký
     public function listDiary() {
-        $diaries = $this->model->getAllDiaries();
+        $bookings = $this->model->getBookingsWithDiaries();
         include PATH_VIEW . 'admin/tour_diaries/list.php';
     }
 
-    public function addDiary() {
-        // Lấy danh sách booking đã hoàn tất để chọn
-        $bookings = $this->model->getCompletedBookingsForSelect();
+    // 2. Trang Viết / Xem chi tiết
+    public function manageDiary() {
+        // Có thể lấy ID từ GET (xem/sửa) hoặc POST (khi chọn tour mới từ dropdown)
+        $booking_id = $_REQUEST['booking_id'] ?? 0;
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->model->create($_POST);
-            header("Location: index.php?action=diary_list");
+        if (!$booking_id) {
+            // Nếu chưa có ID, chuyển sang trang chọn Tour (Add)
+            $bookings = $this->model->getEligibleBookingsForSelect();
+            include PATH_VIEW . 'admin/tour_diaries/add_select.php';
+            return;
+        }
+
+        // Xử lý lưu dữ liệu
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'save') {
+            $diaries = $_POST['diaries'] ?? [];
+            $deleted_ids = $_POST['deleted_ids'] ?? '';
+            $this->model->saveDiaries($booking_id, $diaries, $deleted_ids);
+            
+            // Reload lại trang
+            header("Location: index.php?action=diary_manage&booking_id=$booking_id");
             exit;
         }
-        include PATH_VIEW . 'admin/tour_diaries/add.php';
+
+        // Lấy dữ liệu hiển thị
+        $data = $this->model->getBookingWithDiaries($booking_id);
+        include PATH_VIEW . 'admin/tour_diaries/form.php';
     }
 
-    public function editDiary() {
-        $id = $_GET['id'];
-        $diary = $this->model->getDiaryById($id);
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->model->update($id, $_POST);
-            header("Location: index.php?action=diary_detail&id=$id");
-            exit;
+    // 3. Xóa toàn bộ nhật ký của 1 tour
+    public function deleteBookingDiaries() {
+        $booking_id = $_GET['booking_id'] ?? 0;
+        if ($booking_id) {
+            $this->model->deleteAllDiariesByBooking($booking_id);
         }
-        include PATH_VIEW . 'admin/tour_diaries/edit.php';
-    }
-
-    public function detailDiary() {
-        $id = $_GET['id'];
-        $diary = $this->model->getDiaryById($id);
-        include PATH_VIEW . 'admin/tour_diaries/detail.php';
-    }
-
-    public function deleteDiary() {
-        $this->model->delete($_GET['id']);
         header("Location: index.php?action=diary_list");
+        exit;
+    }
+
+    // Ajax lấy ngày
+    public function ajaxGetTourDays() {
+        $booking_id = $_GET['booking_id'] ?? 0;
+        $days = $this->model->getTourDaysCount($booking_id);
+        echo json_encode(['days' => $days]);
+        exit;
     }
 }
