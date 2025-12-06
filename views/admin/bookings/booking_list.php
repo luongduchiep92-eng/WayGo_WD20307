@@ -111,47 +111,74 @@
                         <?php foreach($bookings as $b): 
                             // 1. Logic Ngày & Trạng thái Tour
                             $today = date('Y-m-d');
-                            $tourDate = $b['ngay_khoi_hanh'] ?? $b['hien_thi_ngay'];
+                            $startDate = $b['ngay_khoi_hanh'] ?? $b['hien_thi_ngay'];
                             
+                            // A. TÍNH TOÁN NGÀY KẾT THÚC
+                            $endDate = $startDate; // Mặc định nếu không có thời gian
+                            if (!empty($startDate) && !empty($b['thoi_gian'])) {
+                                // Lấy số đầu tiên trong chuỗi (VD: "3N2D" -> lấy 3)
+                                if (preg_match('/(\d+)/', $b['thoi_gian'], $matches)) {
+                                    $days = (int)$matches[1]; 
+                                    if ($days > 1) {
+                                        // Ngày kết thúc = Ngày đi + (số ngày - 1)
+                                        $endDate = date('Y-m-d', strtotime($startDate . ' + ' . ($days - 1) . ' days'));
+                                    }
+                                }
+                            }
+
                             $allowCheckin = false;
                             $allowDiary = false;
                             $tourStatusBadge = '';
 
                             if ($b['status'] == 'Hủy') {
                                 $tourStatusBadge = '<span class="badge bg-secondary opacity-50 rounded-pill px-3"><i class="fa-solid fa-ban"></i> Đã hủy</span>';
-                            } elseif (empty($tourDate)) {
+                            } elseif (empty($startDate)) {
                                 $tourStatusBadge = '<span class="badge bg-light text-muted border rounded-pill">Chưa có lịch</span>';
                             } else {
-                                if ($tourDate > $today) {
-                                    $diff = (strtotime($tourDate) - strtotime($today)) / (60 * 60 * 24);
+                                // B. SO SÁNH NGÀY
+                                if ($today < $startDate) {
+                                    // CHƯA ĐI
+                                    $diff = (strtotime($startDate) - strtotime($today)) / (60 * 60 * 24);
                                     if ($diff <= 3) {
-                                        // Sắp đi (Vàng)
                                         $tourStatusBadge = '<span class="badge badge-soft-warning border border-warning rounded-pill px-3"><i class="fa-regular fa-clock"></i> Còn '.$diff.' ngày</span>';
                                         $allowCheckin = true; 
                                     } else {
-                                        // Còn xa (Xanh dương nhạt)
                                         $tourStatusBadge = '<span class="badge badge-soft-info border border-info rounded-pill px-3">Sắp tới</span>';
                                     }
-                                } elseif ($tourDate == $today) {
-                                    // Hôm nay (Xanh lá)
-                                    $tourStatusBadge = '<span class="badge badge-soft-success border border-success rounded-pill px-3 fw-bold"><i class="fa-solid fa-plane-departure"></i> Hôm nay</span>';
-                                    $allowCheckin = true;
+                                } elseif ($today >= $startDate && $today <= $endDate) {
+                                    // ĐANG ĐI (Trong khoảng từ Start -> End)
+                                    $tourStatusBadge = '<span class="badge badge-soft-success border border-success rounded-pill px-3 fw-bold"><i class="fa-solid fa-plane-departure"></i> Đang đi tour</span>';
+                                    $allowCheckin = true; // Vẫn cho checkin trong lúc đang đi
                                 } else {
-                                    // Đã xong (Xám)
+                                    // ĐÃ XONG (Lớn hơn ngày kết thúc)
                                     $tourStatusBadge = '<span class="badge badge-soft-secondary border border-secondary rounded-pill px-3"><i class="fa-solid fa-check"></i> Hoàn thành</span>';
                                     $allowDiary = true;
                                 }
                             }
                         ?>
                             <tr>
-                                <td><a href="index.php?action=booking_detail&id=<?= $b['id'] ?>" class="text-dark fw-bold text-decoration-none">#<?= $b['id'] ?></a></td>
+                                <td>
+                                    <a href="index.php?action=booking_detail&id=<?= $b['id'] ?>" class="text-dark fw-bold text-decoration-none">#<?= $b['id'] ?></a>
+                                </td>
                                 
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="icon-circle"><i class="fa-solid fa-map-location-dot"></i></div>
+                                        <div class="me-3 flex-shrink-0">
+                                            <?php if(!empty($b['tour_image'])): ?>
+                                                <img src="<?= $b['tour_image'] ?>" class="rounded-3 shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div class="icon-circle"><i class="fa-solid fa-map-location-dot"></i></div>
+                                            <?php endif; ?>
+                                        </div>
                                         <div>
                                             <div class="fw-bold text-dark text-truncate" style="max-width: 200px;" title="<?= $b['ten_tour'] ?>"><?= $b['ten_tour'] ?></div>
-                                            <div class="small text-muted mt-1"><i class="fa-regular fa-calendar-check me-1 text-primary"></i> <?= !empty($tourDate) ? date('d/m/Y', strtotime($tourDate)) : '<span class="fst-italic text-danger">Chưa chốt ngày</span>' ?></div>
+                                            <div class="small text-muted mt-1">
+                                                <i class="fa-regular fa-calendar-check me-1 text-primary"></i> 
+                                                <?= !empty($startDate) ? date('d/m/Y', strtotime($startDate)) : '<span class="fst-italic text-danger">--</span>' ?>
+                                                <?php if(!empty($b['thoi_gian'])): ?>
+                                                    <span class="text-muted ms-1">| <?= $b['thoi_gian'] ?></span>
+                                                <?php endif; ?>
+                                            </div>
                                             <div class="small text-muted"><i class="fa-solid fa-user-tie me-1"></i> <?= $b['hdv_name'] ?: '<span class="text-muted fst-italic">--</span>' ?></div>
                                         </div>
                                     </div>

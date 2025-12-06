@@ -21,8 +21,9 @@ class BookingModel extends BaseModel
     }
     
     // 4. Lấy danh sách Booking (Có ảnh + Ngày hiển thị)
+
     public function getAllBookings($status = null) {
-        $sql = "SELECT b.*, t.ten_tour, h.ho_ten AS hdv_name,
+        $sql = "SELECT b.*, t.ten_tour, t.thoi_gian, h.ho_ten AS hdv_name,
                 COALESCE(b.ngay_khoi_hanh, t.ngay_khoi_hanh) as hien_thi_ngay,
                 (SELECT image_path FROM tour_images WHERE tour_id = t.id LIMIT 1) as tour_image
                 FROM bookings b
@@ -143,7 +144,6 @@ class BookingModel extends BaseModel
             }
 
             // C. Xử lý Lịch trình (Xóa/Sửa/Thêm)
-            
             // C1. Xóa các mục bị đánh dấu
             if (!empty($data['deleted_days'])) {
                 $delDays = explode(',', $data['deleted_days']);
