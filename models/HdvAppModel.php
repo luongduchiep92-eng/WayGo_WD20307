@@ -1,52 +1,54 @@
 <?php
+
 require_once "BaseModel.php";
 
-class HdvAppModel extends BaseModel {
-    
-    public function getMyTours($hdv_id) {
-        // [SỬA LỖI] Bỏ điều kiện lọc status tạm thời để debug xem có hiện dữ liệu không
-        // Thêm DISTINCT để tránh lặp tour nếu 1 tour có nhiều booking (dù logic chuẩn là 1 tour 1 booking cho 1 đoàn, nhưng cứ thêm cho chắc)
+class HdvAppModel extends BaseModel
+{
+    public function getMyTours($hdv_id)
+    {
         $sql = "SELECT 
-                    b.id as booking_id, 
-                    t.id as tour_id, 
-                    t.ten_tour, 
-                    t.ngay_khoi_hanh, 
-                    t.thoi_gian, 
-                    b.so_luong, 
-                    b.status, 
-                    t.phuong_tien
+                    b.id AS booking_id,
+                    COALESCE(b.ngay_khoi_hanh, t.ngay_khoi_hanh) AS bk_ngay_khoi_hanh,
+                    t.id AS tour_id,
+                    t.ten_tour,
+                    t.ngay_khoi_hanh,
+                    t.dia_diem,
+                    t.thoi_gian,
+                    b.so_luong,
+                    b.status,
+                    t.phuong_tien,
+                    /* Thêm tổng số ngày của tour */
+                    (SELECT COUNT(*) FROM tour_schedule_days WHERE tour_id = t.id) AS total_days
                 FROM bookings b
                 JOIN tours t ON b.tour_id = t.id
-                WHERE b.hdv_id = ? 
-                -- Tạm thời comment dòng status để test hiển thị
-                -- AND b.status IN ('Đã cọc', 'Hoàn tất') 
-                ORDER BY t.ngay_khoi_hanh ASC";
-                
+                WHERE b.hdv_id = ?
+                ORDER BY COALESCE(b.ngay_khoi_hanh, t.ngay_khoi_hanh) ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$hdv_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getHdvStats($hdv_id) {
+    public function getHdvStats($hdv_id)
+    {
         $sql = "SELECT 
-                    COUNT(*) as total_tours,
-                    SUM(CASE WHEN t.ngay_khoi_hanh >= CURDATE() THEN 1 ELSE 0 END) as upcoming
+                    COUNT(*) AS total_tours,
+                    SUM(CASE WHEN t.ngay_khoi_hanh >= CURDATE() THEN 1 ELSE 0 END) AS upcoming
                 FROM bookings b
                 JOIN tours t ON b.tour_id = t.id
-                WHERE b.hdv_id = ?"; // Bỏ status check luôn cho chắc
+                WHERE b.hdv_id = ?";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$hdv_id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Xử lý null nếu không có dữ liệu
+
         return [
             'total_tours' => $result['total_tours'] ?? 0,
             'upcoming' => $result['upcoming'] ?? 0
         ];
     }
 
-    // Hàm lấy lịch trình (Giữ nguyên)
-    public function getTourScheduleFull($tour_id) {
+    public function getTourScheduleFull($tour_id)
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM tours WHERE id = ?");
         $stmt->execute([$tour_id]);
         $tour = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -61,8 +63,10 @@ class HdvAppModel extends BaseModel {
                 $stmtAct->execute([$day['id']]);
                 $day['activities'] = $stmtAct->fetchAll(PDO::FETCH_ASSOC);
             }
+
             $tour['schedule'] = $days;
         }
+
         return $tour;
     }
 }
