@@ -22,46 +22,85 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     <?php if (!empty($hdvs)): ?>
                         <?php foreach ($hdvs as $hdv): ?>
                             <tr>
                                 <td>#<?= $hdv->id ?></td>
+
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <?php if ($hdv->avatar): ?>
-                                            <img src="<?= $hdv->avatar ?>" class="rounded-circle me-3 border" width="50" height="50" style="object-fit: cover;">
+                                        <?php if (!empty($hdv->avatar)): ?>
+                                            <img src="<?= htmlspecialchars($hdv->avatar ?? '') ?>"
+                                                class="rounded-circle me-3 border"
+                                                width="50" height="50" style="object-fit: cover;">
                                         <?php else: ?>
-                                            <div class="rounded-circle me-3 bg-secondary text-white d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                                            <div class="rounded-circle me-3 bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                style="width:50px; height:50px;">
                                                 <i class="fa-solid fa-user"></i>
                                             </div>
                                         <?php endif; ?>
+
                                         <div>
-                                            <div class="fw-bold"><?= htmlspecialchars($hdv->ho_ten) ?></div>
-                                            <small class="text-muted"><?= htmlspecialchars($hdv->loai_hdv) ?></small>
+                                            <div class="fw-bold"><?= htmlspecialchars($hdv->ho_ten ?? '') ?></div>
+                                            <small class="text-muted"><?= htmlspecialchars($hdv->loai_hdv ?? '') ?></small>
                                         </div>
                                     </div>
                                 </td>
+
                                 <td>
-                                    <div><i class="fa-solid fa-envelope text-primary"></i> <?= htmlspecialchars($hdv->email) ?></div>
-                                    <small><i class="fa-solid fa-phone text-success"></i> <?= htmlspecialchars($hdv->so_dien_thoai) ?></small>
+                                    <div>
+                                        <i class="fa-solid fa-envelope text-primary"></i>
+                                        <?= htmlspecialchars($hdv->email ?? '') ?>
+                                    </div>
+                                    <small>
+                                        <i class="fa-solid fa-phone text-success"></i>
+                                        <?= htmlspecialchars($hdv->so_dien_thoai ?? '') ?>
+                                    </small>
                                 </td>
+
                                 <td>
-                                    <span class="badge bg-info text-dark"><?= htmlspecialchars($hdv->kinh_nghiem_nam) ?> năm</span>
-                                    <br><small class="text-muted"><?= htmlspecialchars($hdv->ngon_ngu) ?></small>
+                                    <span class="badge bg-info text-dark">
+                                        <?= htmlspecialchars($hdv->kinh_nghiem_nam ?? '') ?> năm
+                                    </span><br>
+                                    <small class="text-muted"><?= htmlspecialchars($hdv->ngon_ngu ?? '') ?></small>
                                 </td>
+
                                 <td>
-                                    <div class="text-warning small"><i class="fa-solid fa-star"></i> <?= htmlspecialchars($hdv->danh_gia) ?></div>
+                                    <div class="text-warning small">
+                                        <i class="fa-solid fa-star"></i>
+                                        <?= htmlspecialchars($hdv->danh_gia ?? '') ?>
+                                    </div>
                                 </td>
+
                                 <td>
-                                    <a href="index.php?action=hdv_detail&id=<?= $hdv->id ?>" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-circle-info"></i></a>
-                                    <a href="index.php?action=hdv_edit&id=<?= $hdv->id ?>" class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-pen"></i></a>
-                                    <a href="index.php?action=hdv_delete&id=<?= $hdv->id ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa HDV này?')"><i class="fa-solid fa-trash"></i></a>
+                                    <a href="index.php?action=hdv_detail&id=<?= $hdv->id ?>"
+                                        class="btn btn-sm btn-outline-info">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </a>
+
+                                    <a href="index.php?action=hdv_edit&id=<?= $hdv->id ?>"
+                                        class="btn btn-sm btn-outline-warning">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+
+                                    <a href="index.php?action=hdv_delete&id=<?= $hdv->id ?>"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Xóa HDV này?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+
                     <?php else: ?>
-                        <tr><td colspan="6" class="text-center text-muted py-4">Chưa có dữ liệu.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                Chưa có dữ liệu.
+                            </td>
+                        </tr>
                     <?php endif; ?>
+
                 </tbody>
             </table>
         </div>

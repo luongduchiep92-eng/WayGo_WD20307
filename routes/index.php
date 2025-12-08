@@ -87,28 +87,35 @@ if ($role === 'admin' || $role === 'staff') {
         'checkin_create_session' => (new CheckinController())->createSession(),
         'checkin_delete_session' => (new CheckinController())->deleteSession(),
         default => (new DashboardController())->index(),
-    };
 
-} 
+        // Quản Lý Tài Khoản Người Dùng
+        'user_list'    => (new UserController())->listUser(),
+        'user_add'     => (new UserController())->addUser(),
+        'user_edit'    => (new UserController())->editUser(),
+        'user_delete'  => (new UserController())->deleteUser(),
+    };
+}
 // NHÓM 2: HDV -> Vào trang ứng dụng mobile
 elseif ($role === 'hdv') {
     match ($action) {
         'dashboard' => (new HdvAppController())->index(),
         'my_tours'  => (new HdvAppController())->myTours(),
         'hdv_tour_detail' => (new HdvAppController())->detailTour(),
-        
+
         // Các chức năng dùng chung (Checkin & Diary)
         'checkin_perform' => (new CheckinController())->performCheckin(),
         'checkin_ajax_update' => (new CheckinController())->ajaxUpdateStatus(),
         'checkin_all' => (new CheckinController())->checkinAll(),
-        'diary_add' => (new TourDiaryController())->addDiary(),
-        'diary_edit' => (new TourDiaryController())->editDiary(),
+        'checkin_create_session' => (new CheckinController())->createSession(),
+        'checkin_delete_session' => (new CheckinController())->deleteSession(),
+        // Chức năng Nhật ký tour (HDV)
+        'diary_manage'     => (new HdvAppController())->manageDiary(),
+
+
 
         default => (new HdvAppController())->index(),
     };
-
-} 
-else {
+} else {
     // Role lạ hoặc user thường (không có quyền vào admin)
     echo "<div style='display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; font-family:sans-serif;'>";
     echo "<h2 style='color:red;'>Truy cập bị từ chối!</h2>";

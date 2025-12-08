@@ -4,25 +4,29 @@ require_once "BaseModel.php";
 class BookingModel extends BaseModel
 {
     // 1. Lấy danh sách Tour đang hoạt động
-    public function getAllTours() { 
-        return $this->pdo->query("SELECT * FROM tours WHERE status='Hoạt động'")->fetchAll(PDO::FETCH_ASSOC); 
+    public function getAllTours()
+    {
+        return $this->pdo->query("SELECT * FROM tours WHERE status='Hoạt động'")->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // 2. Lấy danh sách HDV
-    public function getAllHdvs() { 
-        return $this->pdo->query("SELECT * FROM huong_dan_viens")->fetchAll(PDO::FETCH_ASSOC); 
+    public function getAllHdvs()
+    {
+        return $this->pdo->query("SELECT * FROM huong_dan_viens")->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // 3. Lấy NCC theo loại
-    public function getSuppliersByType($type) { 
-        $stmt = $this->pdo->prepare("SELECT * FROM suppliers WHERE type=?"); 
-        $stmt->execute([$type]); 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); 
+    public function getSuppliersByType($type)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM suppliers WHERE type=?");
+        $stmt->execute([$type]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     // 4. Lấy danh sách Booking (Có ảnh + Ngày hiển thị)
 
-    public function getAllBookings($status = null) {
+    public function getAllBookings($status = null)
+    {
         $sql = "SELECT b.*, t.ten_tour, t.thoi_gian, h.ho_ten AS hdv_name,
                 COALESCE(b.ngay_khoi_hanh, t.ngay_khoi_hanh) as hien_thi_ngay,
                 (SELECT image_path FROM tour_images WHERE tour_id = t.id LIMIT 1) as tour_image
@@ -30,7 +34,7 @@ class BookingModel extends BaseModel
                 LEFT JOIN tours t ON b.tour_id = t.id
                 LEFT JOIN huong_dan_viens h ON b.hdv_id = h.id
                 WHERE 1=1";
-        
+
         if ($status) {
             $sql .= " AND b.status = '$status'";
         }
@@ -40,7 +44,8 @@ class BookingModel extends BaseModel
     }
 
     // 5. Kiểm tra HDV rảnh
-    public function getAvailableHdvs($ngay_khoi_hanh, $loai_tour) {
+    public function getAvailableHdvs($ngay_khoi_hanh, $loai_tour)
+    {
         $loai_hdv = ($loai_tour == 'Trong nước') ? 'Nội địa' : 'Quốc tế';
         $sql = "SELECT * FROM huong_dan_viens 
                 WHERE loai_hdv = ? 
@@ -56,29 +61,30 @@ class BookingModel extends BaseModel
     }
 
     // 6. TẠO BOOKING MỚI (FULL LOGIC)
-    public function createBookingFull($data) {
+    public function createBookingFull($data)
+    {
         try {
             $this->pdo->beginTransaction();
 
             // A. Insert Booking (created_by = NULL để tránh lỗi FK)
             $sql = "INSERT INTO bookings (tour_id, hdv_id, customer_name, customer_phone, phuong_tien, ngay_khoi_hanh, so_luong, tong_tien, tien_da_coc, status, created_by, hotel_supplier_id, restaurant_supplier_id, chi_phi_phat_sinh, ly_do_phat_sinh) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)";
-            
+
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                $data['tour_id'], 
-                empty($data['hdv_id']) ? null : $data['hdv_id'], 
-                $data['customer_name'], 
+                $data['tour_id'],
+                empty($data['hdv_id']) ? null : $data['hdv_id'],
+                $data['customer_name'],
                 $data['customer_phone'],
                 $data['phuong_tien'],
-                $data['ngay_khoi_hanh'], 
-                $data['so_luong'], 
-                $data['tong_tien'], 
-                $data['tien_da_coc'], 
+                $data['ngay_khoi_hanh'],
+                $data['so_luong'],
+                $data['tong_tien'],
+                $data['tien_da_coc'],
                 $data['status'],
-                empty($data['hotel_supplier_id']) ? null : $data['hotel_supplier_id'], 
+                empty($data['hotel_supplier_id']) ? null : $data['hotel_supplier_id'],
                 empty($data['restaurant_supplier_id']) ? null : $data['restaurant_supplier_id'],
-                $data['chi_phi_phat_sinh'], 
+                $data['chi_phi_phat_sinh'],
                 $data['ly_do_phat_sinh']
             ]);
             $booking_id = $this->pdo->lastInsertId();
@@ -116,23 +122,24 @@ class BookingModel extends BaseModel
     }
 
     // 7. CẬP NHẬT BOOKING (FULL LOGIC)
-    public function updateBookingFull($id, $data) {
+    public function updateBookingFull($id, $data)
+    {
         try {
             // A. Update thông tin chung
             $sql = "UPDATE bookings SET hdv_id=?, phuong_tien=?, ngay_khoi_hanh=?, hotel_supplier_id=?, restaurant_supplier_id=?, status=?, chi_phi_phat_sinh=?, ly_do_phat_sinh=?, tong_tien=? WHERE id=?";
             $this->pdo->prepare($sql)->execute([
-                empty($data['hdv_id']) ? null : $data['hdv_id'], 
-                $data['phuong_tien'], 
+                empty($data['hdv_id']) ? null : $data['hdv_id'],
+                $data['phuong_tien'],
                 $data['ngay_khoi_hanh'],
-                empty($data['hotel_supplier_id']) ? null : $data['hotel_supplier_id'], 
-                empty($data['restaurant_supplier_id']) ? null : $data['restaurant_supplier_id'], 
-                $data['status'], 
-                $data['chi_phi_phat_sinh'], 
-                $data['ly_do_phat_sinh'], 
-                $data['tong_tien'], 
+                empty($data['hotel_supplier_id']) ? null : $data['hotel_supplier_id'],
+                empty($data['restaurant_supplier_id']) ? null : $data['restaurant_supplier_id'],
+                $data['status'],
+                $data['chi_phi_phat_sinh'],
+                $data['ly_do_phat_sinh'],
+                $data['tong_tien'],
                 $id
             ]);
-            
+
             // B. Update Khách hàng (Xóa cũ thêm mới)
             if (!empty($data['customers'])) {
                 $this->pdo->prepare("DELETE FROM booking_customers WHERE booking_id=?")->execute([$id]);
@@ -147,46 +154,46 @@ class BookingModel extends BaseModel
             // C1. Xóa các mục bị đánh dấu
             if (!empty($data['deleted_days'])) {
                 $delDays = explode(',', $data['deleted_days']);
-                foreach ($delDays as $dId) if(is_numeric($dId)) {
+                foreach ($delDays as $dId) if (is_numeric($dId)) {
                     $this->pdo->prepare("DELETE FROM booking_schedule_activities WHERE day_id=?")->execute([$dId]);
                     $this->pdo->prepare("DELETE FROM booking_schedule_days WHERE id=?")->execute([$dId]);
                 }
             }
             if (!empty($data['deleted_activities'])) {
                 $delActs = explode(',', $data['deleted_activities']);
-                foreach ($delActs as $aId) if(is_numeric($aId)) {
+                foreach ($delActs as $aId) if (is_numeric($aId)) {
                     $this->pdo->prepare("DELETE FROM booking_schedule_activities WHERE id=?")->execute([$aId]);
                 }
             }
 
             // C2. Thêm mới hoặc Cập nhật
-            if(!empty($data['schedule'])){
+            if (!empty($data['schedule'])) {
                 $stmtUpdDay = $this->pdo->prepare("UPDATE booking_schedule_days SET tieu_de=?, mo_ta=? WHERE id=?");
                 $stmtInsDay = $this->pdo->prepare("INSERT INTO booking_schedule_days (booking_id, ngay_thu, tieu_de, mo_ta) VALUES (?, ?, ?, ?)");
-                
+
                 $stmtUpdAct = $this->pdo->prepare("UPDATE booking_schedule_activities SET thoi_gian_bat_dau=?, thoi_gian_ket_thuc=?, dia_diem=?, hoat_dong=? WHERE id=?");
                 $stmtInsAct = $this->pdo->prepare("INSERT INTO booking_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong) VALUES (?, ?, ?, ?, ?)");
 
                 $dayCount = 0; // Để tính ngày thứ mấy nếu thêm mới
 
-                foreach($data['schedule'] as $day_key => $day){
+                foreach ($data['schedule'] as $day_key => $day) {
                     $dayCount++;
                     $current_day_id = 0;
 
-                    if(is_numeric($day_key)){
+                    if (is_numeric($day_key)) {
                         // Cập nhật ngày cũ
                         $stmtUpdDay->execute([$day['tieu_de'], $day['mo_ta'], $day_key]);
                         $current_day_id = $day_key;
                     } else {
                         // Thêm ngày mới
-                        $ngay_thu = $dayCount; 
+                        $ngay_thu = $dayCount;
                         $stmtInsDay->execute([$id, $ngay_thu, $day['tieu_de'], $day['mo_ta']]);
                         $current_day_id = $this->pdo->lastInsertId();
                     }
 
-                    if(!empty($day['activities'])){
-                        foreach($day['activities'] as $act_key => $act){
-                            if(is_numeric($act_key)){
+                    if (!empty($day['activities'])) {
+                        foreach ($day['activities'] as $act_key => $act) {
+                            if (is_numeric($act_key)) {
                                 // Cập nhật hoạt động cũ
                                 $stmtUpdAct->execute([$act['thoi_gian_bat_dau'], $act['thoi_gian_ket_thuc'], $act['dia_diem'], $act['hoat_dong'], $act_key]);
                             } else {
@@ -203,7 +210,8 @@ class BookingModel extends BaseModel
     }
 
     // 8. Lấy chi tiết Booking (Kèm Ảnh & Lịch trình Booking)
-    public function getBookingDetailFull($id) {
+    public function getBookingDetailFull($id)
+    {
         $sql = "SELECT b.*, 
                 COALESCE(b.ngay_khoi_hanh, t.ngay_khoi_hanh) as ngay_khoi_hanh,
                 t.ten_tour, t.loai_tour, h.ho_ten as hdv_name, s1.name as hotel_name, s2.name as res_name,
@@ -221,34 +229,37 @@ class BookingModel extends BaseModel
 
         $booking['customers'] = $this->pdo->query("SELECT * FROM booking_customers WHERE booking_id=$id")->fetchAll(PDO::FETCH_ASSOC);
         $booking['payments'] = $this->pdo->query("SELECT * FROM payment_history WHERE booking_id=$id ORDER BY ngay_thu DESC")->fetchAll(PDO::FETCH_ASSOC);
-        
+
         // Lấy lịch trình từ bảng BOOKING (để hiển thị đúng cái đã sửa/copy)
         $days = $this->pdo->query("SELECT * FROM booking_schedule_days WHERE booking_id=$id ORDER BY ngay_thu ASC")->fetchAll(PDO::FETCH_ASSOC);
-        foreach($days as &$day) {
-             $day['activities'] = $this->pdo->query("SELECT * FROM booking_schedule_activities WHERE day_id={$day['id']} ORDER BY thoi_gian_bat_dau ASC")->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($days as &$day) {
+            $day['activities'] = $this->pdo->query("SELECT * FROM booking_schedule_activities WHERE day_id={$day['id']} ORDER BY thoi_gian_bat_dau ASC")->fetchAll(PDO::FETCH_ASSOC);
         }
         $booking['schedule'] = $days;
         return $booking;
     }
 
     // 9. Thêm lịch sử thanh toán
-    public function addPaymentHistory($booking_id, $amount, $type, $note) {
+    public function addPaymentHistory($booking_id, $amount, $type, $note)
+    {
         $stmt = $this->pdo->prepare("INSERT INTO payment_history (booking_id, so_tien, loai_thanh_toan, ghi_chu, nguoi_thu_tien) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$booking_id, $amount, $type, $note, $_SESSION['user_name'] ?? 'Admin']);
         $this->pdo->prepare("UPDATE bookings SET tien_da_coc = (SELECT SUM(so_tien) FROM payment_history WHERE booking_id=?) WHERE id=?")->execute([$booking_id, $booking_id]);
     }
-    
+
     // 10. Xóa Booking
-    public function deleteBooking($id) {
+    public function deleteBooking($id)
+    {
         $this->pdo->prepare("DELETE FROM bookings WHERE id=?")->execute([$id]);
     }
-    
+
     // 11. Lấy Data Tour cho Ajax (Gồm cả lịch trình)
-    public function getTourDataForBooking($tour_id) {
+    public function getTourDataForBooking($tour_id)
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM tours WHERE id = ?");
         $stmt->execute([$tour_id]);
         $tour = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($tour) {
             $stmtDays = $this->pdo->prepare("SELECT * FROM tour_schedule_days WHERE tour_id = ? ORDER BY ngay_thu ASC");
             $stmtDays->execute([$tour_id]);
@@ -265,8 +276,9 @@ class BookingModel extends BaseModel
     }
 
     // --- CÁC HÀM HỖ TRỢ PRIVATE ---
-    
-    private function copyScheduleFromTour($booking_id, $tour_id) {
+
+    private function copyScheduleFromTour($booking_id, $tour_id)
+    {
         $stmtDays = $this->pdo->prepare("SELECT * FROM tour_schedule_days WHERE tour_id = ? ORDER BY ngay_thu ASC");
         $stmtDays->execute([$tour_id]);
         $tourDays = $stmtDays->fetchAll(PDO::FETCH_ASSOC);
@@ -290,11 +302,12 @@ class BookingModel extends BaseModel
         }
     }
 
-    private function insertBookingDayFromData($booking_id, $day) {
+    private function insertBookingDayFromData($booking_id, $day)
+    {
         $stmtDay = $this->pdo->prepare("INSERT INTO booking_schedule_days (booking_id, ngay_thu, tieu_de, mo_ta) VALUES (?, ?, ?, ?)");
         $stmtDay->execute([$booking_id, $day['ngay_thu'], $day['tieu_de'], $day['mo_ta'] ?? '']);
         $day_id = $this->pdo->lastInsertId();
-        
+
         if (!empty($day['activities'])) {
             $stmtAct = $this->pdo->prepare("INSERT INTO booking_schedule_activities (day_id, thoi_gian_bat_dau, thoi_gian_ket_thuc, dia_diem, hoat_dong) VALUES (?, ?, ?, ?, ?)");
             foreach ($day['activities'] as $act) {
@@ -303,4 +316,3 @@ class BookingModel extends BaseModel
         }
     }
 }
-?>

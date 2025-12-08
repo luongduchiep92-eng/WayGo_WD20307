@@ -14,19 +14,19 @@
 
     <div class="mt-4">
         <h6 class="text-uppercase fw-bold text-secondary mb-3 ps-1">Chi tiết lịch trình</h6>
-        
-        <?php if(!empty($tour['schedule'])): ?>
-            <?php foreach($tour['schedule'] as $day): ?>
+
+        <?php if (!empty($tour['schedule'])): ?>
+            <?php foreach ($tour['schedule'] as $day): ?>
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-header bg-white fw-bold text-primary border-bottom-0 pt-3">
                         <i class="fa-regular fa-calendar-check me-1"></i> Ngày <?= $day['ngay_thu'] ?>: <?= $day['tieu_de'] ?>
                     </div>
                     <div class="card-body pt-0">
                         <p class="small text-muted fst-italic mb-3 ps-4 border-start border-2 ms-1"><?= nl2br($day['mo_ta']) ?></p>
-                        
-                        <?php if(!empty($day['activities'])): ?>
+
+                        <?php if (!empty($day['activities'])): ?>
                             <div class="vstack gap-2">
-                                <?php foreach($day['activities'] as $act): ?>
+                                <?php foreach ($day['activities'] as $act): ?>
                                     <div class="d-flex align-items-start p-2 rounded bg-light">
                                         <div class="schedule-time text-end me-3">
                                             <?= substr($act['thoi_gian_bat_dau'], 0, 5) ?><br>
@@ -34,7 +34,7 @@
                                         </div>
                                         <div class="border-start border-3 border-primary ps-3">
                                             <div class="fw-bold text-dark"><?= $act['hoat_dong'] ?></div>
-                                            <?php if($act['dia_diem']): ?>
+                                            <?php if ($act['dia_diem']): ?>
                                                 <small class="text-muted"><i class="fa-solid fa-map-pin"></i> <?= $act['dia_diem'] ?></small>
                                             <?php endif; ?>
                                         </div>
@@ -51,6 +51,19 @@
             <div class="alert alert-warning text-center">Chưa có dữ liệu lịch trình.</div>
         <?php endif; ?>
     </div>
+
+    <?php
+    // Sử dụng booking_id từ URL nếu có
+    $bookingId = $_GET['booking_id'] ?? 0;
+    $daKhoiHanh = (!empty($tour['ngay_khoi_hanh']) && strtotime($tour['ngay_khoi_hanh']) <= time());
+    ?>
+    <?php if ($bookingId && $daKhoiHanh): ?>
+        <div class="text-center my-4">
+            <a href="index.php?action=diary_manage&booking_id=<?= $bookingId ?>" class="btn btn-primary">
+                <i class="fa-solid fa-book-open me-1"></i> Viết nhật ký tour
+            </a>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php include PATH_VIEW . 'layouts/footer_hdv.php'; ?>

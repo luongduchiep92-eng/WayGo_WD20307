@@ -1137,3 +1137,10 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- thêm mới ngày 7/12
+-- giúp bảng huong_dan_vien ánh xạ đến bảng users
+ALTER TABLE users ADD COLUMN hdv_id INT DEFAULT NULL;
+-- ánh xạ bằng 2 câu lênh này trong bảng user
+UPDATE users SET hdv_id = 1 WHERE username = 'ltl';
+UPDATE users SET hdv_id = 2 WHERE username = 'dth';
