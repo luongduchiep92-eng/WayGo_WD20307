@@ -55,7 +55,7 @@ class SupplierController
         exit;
     }
 
-    public function deleteSupplier() // sửa lỗi eleteSupplier
+    public function deleteSupplier()
     {
         $model = new Supplier();
         $model->deleteSupplier($_GET['id']);

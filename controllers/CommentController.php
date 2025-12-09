@@ -1,5 +1,4 @@
 <?php
-// Gọi model
 require_once PATH_MODEL . 'CommentModel.php';
 
 class CommentController {
@@ -17,16 +16,12 @@ class CommentController {
             'rating' => $_POST['rating'] ?? ''
         ];
         $comments = $this->model->getAllComments($filters);
-        
-        // --- SỬA LỖI Ở DÒNG DƯỚI ---
-        // Sai: include PATH_VIEW . 'views/comments/list.php';
-        // Đúng:
+
         include PATH_VIEW . 'admin/comments/list.php'; 
     }
 
     // Form thêm mới
     public function showAddForm() {
-        // --- SỬA LỖI Ở DÒNG DƯỚI ---
         include PATH_VIEW . 'admin/comments/add.php';
     }
 
@@ -56,7 +51,6 @@ class CommentController {
     public function detailComment() {
         $id = $_GET['id'] ?? null;
         $comment = $this->model->getCommentById($id);
-        // --- SỬA LỖI Ở DÒNG DƯỚI ---
         include PATH_VIEW . 'admin/comments/detail.php';
     }
 }

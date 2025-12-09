@@ -20,8 +20,7 @@ class BookingController
         }
         exit;
     }
-
-    // ... (GIỮ NGUYÊN CODE CŨ) ...
+    
     public function ajaxGetTourInfo() {
         if (!isset($_GET['tour_id'])) return;
         $data = $this->model->getTourDataForBooking($_GET['tour_id']);

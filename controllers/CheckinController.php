@@ -25,9 +25,6 @@ class CheckinController
 
         // Lấy tất cả các lần điểm danh cũ
         $sessions = $this->model->getSessions($booking_id);
-
-        // [LOGIC TỰ ĐỘNG CHỌN] 
-        // Nếu không có session_id trên URL (tức là vừa vào trang), 
         // nhưng trong DB đã có session cũ -> Tự chọn cái mới nhất (đầu tiên)
         if (!$active_session_id && !empty($sessions)) {
             $active_session_id = $sessions[0]['id'];
@@ -103,13 +100,12 @@ class CheckinController
     public function deleteSession()
     {
         $session_id = $_GET['session_id'] ?? 0;
-        $booking_id = $_GET['booking_id'] ?? 0; // Cần cái này để quay lại đúng trang
+        $booking_id = $_GET['booking_id'] ?? 0;
 
         if ($session_id) {
             $this->model->deleteSession($session_id);
         }
 
-        // Quay lại trang checkin của booking đó
         header("Location: index.php?action=checkin_perform&id=$booking_id");
         exit;
     }
