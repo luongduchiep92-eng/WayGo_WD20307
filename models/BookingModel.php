@@ -43,20 +43,66 @@ class BookingModel extends BaseModel
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 5. Kiểm tra HDV rảnh
-    public function getAvailableHdvs($ngay_khoi_hanh, $loai_tour)
+    // Kiểm tra HDV rảnh
+    public function getAvailableHdvs($ngay_khoi_hanh, $loai_tour, $tour_id_moi = null)
     {
-        $loai_hdv = ($loai_tour == 'Trong nước') ? 'Nội địa' : 'Quốc tế';
-        $sql = "SELECT * FROM huong_dan_viens 
-                WHERE loai_hdv = ? 
-                AND id NOT IN (
-                    SELECT b.hdv_id FROM bookings b
-                    WHERE b.ngay_khoi_hanh = ? 
-                    AND b.status != 'Hủy' 
+        // Tính ngày kết thúc của Tour MỚI định đặt
+        $duration_new = 1;
+        if ($tour_id_moi) {
+            $stmtCount = $this->pdo->prepare("SELECT COUNT(*) FROM tour_schedule_days WHERE tour_id = ?");
+            $stmtCount->execute([$tour_id_moi]);
+            $duration_new = $stmtCount->fetchColumn();
+            if ($duration_new < 1) $duration_new = 1;
+        }
+        
+        // Ngày kết thúc = Ngày đi + (số ngày - 1)
+        $ngay_ket_thuc_moi = date('Y-m-d', strtotime("$ngay_khoi_hanh + " . ($duration_new - 1) . " days"));
+
+        // Xây dựng câu truy vấn cơ bản
+        $sql = "SELECT h.* FROM huong_dan_viens h WHERE 1=1";
+        $params = [];
+
+        //Chỉ lọc loại HDV nếu KHÔNG PHẢI là 'Theo yêu cầu'
+        if ($loai_tour !== 'Theo yêu cầu') {
+            $loai_hdv_can_tim = ($loai_tour == 'Trong nước') ? 'Nội địa' : 'Quốc tế';
+            $sql .= " AND h.loai_hdv = ?";
+            $params[] = $loai_hdv_can_tim;
+        }
+        
+        // Loại bỏ HDV đang bận đi Tour (Trùng lịch)
+        // Logic trùng
+        $sql .= " AND h.id NOT IN (
+                    SELECT b.hdv_id 
+                    FROM bookings b
+                    JOIN tours t ON b.tour_id = t.id
+                    LEFT JOIN (
+                        SELECT tour_id, COUNT(*) as duration 
+                        FROM tour_schedule_days 
+                        GROUP BY tour_id
+                    ) d ON t.id = d.tour_id
+                    
+                    WHERE b.status != 'Hủy' 
                     AND b.hdv_id IS NOT NULL
+                    AND (
+                        b.ngay_khoi_hanh <= ? 
+                        AND 
+                        DATE_ADD(b.ngay_khoi_hanh, INTERVAL (COALESCE(d.duration, 1) - 1) DAY) >= ?
+                    )
                 )";
+        $params[] = $ngay_ket_thuc_moi;
+        $params[] = $ngay_khoi_hanh;
+        // Loại bỏ HDV đang Nghỉ phép
+        // Logic: Có bất kỳ ngày nghỉ nào nằm trong khoảng thời gian tour mới không
+        $sql .= " AND h.id NOT IN (
+                    SELECT n.hdv_id 
+                    FROM hdv_nghi n 
+                    WHERE n.ngay_nghi BETWEEN ? AND ?
+                )";
+        $params[] = $ngay_khoi_hanh;
+        $params[] = $ngay_ket_thuc_moi;
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$loai_hdv, $ngay_khoi_hanh]);
+        $stmt->execute($params);
+        
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

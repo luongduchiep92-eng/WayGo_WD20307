@@ -56,7 +56,7 @@
                         <i class="fa-solid fa-clipboard-user"></i> Check-in
                     </a>
                 </div>
-                <?php if($t['status'] == 'Hoàn tất'): ?>
+                <?php if (strtotime($t['ngay_khoi_hanh']) <= time() && $t['status'] !== 'Hủy'): ?>
                 <div class="col-12">
                     <a href="index.php?action=diary_add" class="btn btn-success btn-sm w-100">
                         <i class="fa-solid fa-pen-nib"></i> Viết Nhật Ký

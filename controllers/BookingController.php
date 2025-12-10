@@ -7,13 +7,14 @@ class BookingController
         $this->model = new BookingModel();
     }
 
-    // --- [MỚI] AJAX: LẤY HDV RẢNH THEO NGÀY & LOẠI TOUR ---
+    // LẤY HDV RẢNH THEO NGÀY & LOẠI TOUR
     public function ajaxGetAvailableHdvs() {
         $ngay = $_GET['date'] ?? '';
         $type = $_GET['type'] ?? '';
+        $tour_id = $_GET['tour_id'] ?? null;
 
         if ($ngay && $type) {
-            $hdvs = $this->model->getAvailableHdvs($ngay, $type);
+            $hdvs = $this->model->getAvailableHdvs($ngay, $type, $tour_id);
             echo json_encode($hdvs);
         } else {
             echo json_encode([]);

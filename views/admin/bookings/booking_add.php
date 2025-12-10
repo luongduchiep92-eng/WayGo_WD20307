@@ -254,10 +254,13 @@ document.addEventListener("DOMContentLoaded", function(){
         const date = startDateInput.value;
         const opt = tourSelect.options[tourSelect.selectedIndex];
         const type = opt ? opt.getAttribute('data-type') : '';
+        const tourId = tourSelect.value; // [MỚI] Lấy ID tour
 
-        if(date && type) {
-            hdvSelect.innerHTML = '<option>Đang kiểm tra...</option>';
-            fetch(`index.php?action=ajax_get_hdv_avail&date=${date}&type=${type}`)
+        if(date && type && tourId) {
+            hdvSelect.innerHTML = '<option>Đang kiểm tra lịch trùng...</option>';
+            
+            // [MỚI] Thêm &tour_id=${tourId} vào URL
+            fetch(`index.php?action=ajax_get_hdv_avail&date=${date}&type=${type}&tour_id=${tourId}`)
             .then(res => res.json())
             .then(data => {
                 hdvSelect.innerHTML = '<option value="">-- Chọn HDV phù hợp --</option>';
@@ -266,7 +269,7 @@ document.addEventListener("DOMContentLoaded", function(){
                         hdvSelect.innerHTML += `<option value="${h.id}">${h.ho_ten} (${h.loai_hdv})</option>`;
                     });
                 } else {
-                    hdvSelect.innerHTML = '<option value="">⚠️ Không có HDV rảnh ngày này!</option>';
+                    hdvSelect.innerHTML = '<option value="">⚠️ Không có HDV rảnh (Trùng lịch)!</option>';
                 }
             });
         }
