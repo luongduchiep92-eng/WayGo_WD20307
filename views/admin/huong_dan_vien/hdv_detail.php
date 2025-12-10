@@ -7,6 +7,7 @@
         border-radius: 15px 15px 0 0;
         position: relative;
     }
+
     .profile-avatar {
         width: 150px;
         height: 150px;
@@ -16,21 +17,25 @@
         position: absolute;
         bottom: -75px;
         left: 50px;
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
         background-color: #fff;
     }
+
     .profile-info {
-        padding-top: 85px; /* Khoảng trống cho avatar */
+        padding-top: 85px;
     }
+
     .info-card {
         transition: all 0.3s;
         border: none;
         box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
         height: 100%;
     }
+
     .info-card:hover {
         transform: translateY(-5px);
     }
+
     .info-icon {
         width: 40px;
         height: 40px;
@@ -43,14 +48,14 @@
 </style>
 
 <div class="container mt-4 mb-5">
-    
+
     <div class="card card-modern border-0 shadow-lg overflow-visible mb-4">
         <div class="profile-header">
             <a href="index.php?action=hdv_list" class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 fw-bold text-primary shadow-sm">
                 <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
             </a>
         </div>
-        
+
         <?php if ($hdv->avatar): ?>
             <img src="<?= $hdv->avatar ?>" alt="Avatar" class="profile-avatar">
         <?php else: ?>
@@ -105,7 +110,15 @@
                                     <div class="info-icon bg-info-subtle text-info me-3"><i class="fa-solid fa-cake-candles"></i></div>
                                     <div>
                                         <small class="text-muted d-block">Ngày sinh</small>
-                                        <span class="fw-bold text-dark"><?= date('d/m/Y', strtotime($hdv->ngay_sinh)) ?></span>
+                                        <span class="fw-bold text-dark">
+                                            <?php
+                                            if (!empty($hdv->ngay_sinh)) {
+                                                echo date('d/m/Y', strtotime($hdv->ngay_sinh));
+                                            } else {
+                                                echo "Chưa cập nhật";
+                                            }
+                                            ?>
+                                        </span>
                                     </div>
                                 </li>
                                 <li class="list-group-item border-0 px-0 d-flex align-items-center">
@@ -159,9 +172,11 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

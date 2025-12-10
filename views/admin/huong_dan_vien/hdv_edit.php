@@ -3,6 +3,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0 text-gray-800 fw-bold">Sửa thông tin HDV</h1>
     <a href="index.php?action=hdv_list" class="btn btn-secondary">
+
         <i class="fa-solid fa-arrow-left"></i> Quay lại
     </a>
 </div>
@@ -47,8 +48,8 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">Loại HDV</label>
                 <select name="loai_hdv" class="form-select">
-                    <option value="Nội địa" <?= $hdv->loai_hdv=='Nội địa'?'selected':'' ?>>Nội địa</option>
-                    <option value="Quốc tế" <?= $hdv->loai_hdv=='Quốc tế'?'selected':'' ?>>Quốc tế</option>
+                    <option value="Nội địa" <?= $hdv->loai_hdv == 'Nội địa' ? 'selected' : '' ?>>Nội địa</option>
+                    <option value="Quốc tế" <?= $hdv->loai_hdv == 'Quốc tế' ? 'selected' : '' ?>>Quốc tế</option>
                 </select>
             </div>
             <div class="row">
