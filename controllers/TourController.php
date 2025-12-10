@@ -81,7 +81,7 @@ public function listTour(){
             'thoi_gian'=>$_POST['thoi_gian'],
             'gia_tour'=>$_POST['gia_tour'],
             'mo_ta'=>$_POST['mo_ta'],
-            'ngay_khoi_hanh'=>$_POST['ngay_khoi_hanh'] ?? null, // Lưu ý check null
+            'ngay_khoi_hanh'=>$_POST['ngay_khoi_hanh'] ?? null,
             'phuong_tien'=>$_POST['phuong_tien'],
             'so_nguoi_toi_da'=>$_POST['so_nguoi_toi_da'],
             'status' => $_POST['status']

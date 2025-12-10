@@ -57,7 +57,11 @@
         </div>
 
         <button type="submit" class="btn btn-success">Thêm mới</button>
+
         <a href="index.php?action=hdv_list" class="btn btn-secondary">Quay lại</a>
+=======
+        <a href="<?= 'index.php?action=hdv_list'; ?>" class="btn btn-secondary">Quay lại</a>
+
     </form>
 </div>
 

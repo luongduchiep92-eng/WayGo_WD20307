@@ -62,14 +62,14 @@ class UserModel extends BaseModel
         return $result ? $result['id'] : null;
     }
 
-    // ✅ Lấy tất cả người dùng
+    // Lấy tất cả người dùng
     public function getAllUsers()
     {
         $stmt = $this->pdo->query("SELECT id, username, full_name, email, role, status FROM users");
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    // ✅ Lấy người dùng theo ID
+    // Lấy người dùng theo ID
     public function getUserById($id)
     {
         $stmt = $this->pdo->prepare("SELECT id, username, full_name, email, role, status FROM users WHERE id = ?");
@@ -77,7 +77,7 @@ class UserModel extends BaseModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // ✅ Thêm người dùng (dành cho admin thêm)
+    // Thêm người dùng (dành cho admin thêm)
     public function createUser($data)
     {
         try {
@@ -126,7 +126,7 @@ class UserModel extends BaseModel
         }
     }
 
-    // ✅ Cập nhật người dùng
+    // Cập nhật người dùng
     public function updateUser($id, $data)
     {
         $fields = "full_name = ?, email = ?, role = ?, status = ?";
@@ -144,7 +144,7 @@ class UserModel extends BaseModel
         return $stmt->execute($params);
     }
 
-    // ✅ Xóa người dùng
+    // Xóa người dùng
     public function deleteUser($id)
     {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");

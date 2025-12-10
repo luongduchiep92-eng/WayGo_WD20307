@@ -205,7 +205,6 @@ class BookingModel extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            // Có thể log lỗi
         }
     }
 

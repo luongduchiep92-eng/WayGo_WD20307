@@ -30,21 +30,18 @@ class UserController
                 'email'      => $_POST['email'],
                 'password'   => $_POST['password'],
                 'role'       => $_POST['role'],
-                'status'     => isset($_POST['status']) ? 1 : 0,  // nếu checkbox "Kích hoạt" được chọn
-                'phone'      => $_POST['phone'] ?? ''            // số ĐT (tùy chọn nếu role=hdv)
+                'status'     => isset($_POST['status']) ? 1 : 0, 
+                'phone'      => $_POST['phone'] ?? ''            
             ];
             // Gọi model để tạo người dùng mới
             $result = $this->userModel->createUser($data);
             if ($result) {
-                // Chuyển hướng về danh sách sau khi thêm thành công
                 header("Location: index.php?action=user_list");
             } else {
                 $error = "Email hoặc tên đăng nhập đã tồn tại!";
-                // Load lại view form thêm kèm thông báo lỗi
                 include 'views/admin/users/user_add.php';
             }
         } else {
-            // Phương thức GET: hiển thị form thêm
             include 'views/admin/users/user_add.php';
         }
     }
@@ -54,7 +51,6 @@ class UserController
     {
         $id = $_GET['id'] ?? 0;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Thu thập dữ liệu từ form sửa
             $data = [
                 'full_name' => $_POST['full_name'],
                 'email'     => $_POST['email'],
@@ -67,7 +63,6 @@ class UserController
             }
             // Cập nhật dữ liệu qua model
             $this->userModel->updateUser($id, $data);
-            // Chuyển hướng về danh sách tài khoản sau khi lưu
             header("Location: index.php?action=user_list");
         } else {
             // Phương thức GET: lấy thông tin người dùng và hiển thị form
@@ -83,7 +78,6 @@ class UserController
         if ($id) {
             $this->userModel->deleteUser($id);
         }
-        // Sau khi xóa, quay lại trang danh sách
         header("Location: index.php?action=user_list");
     }
 }

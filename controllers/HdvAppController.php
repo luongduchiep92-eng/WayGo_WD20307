@@ -1,5 +1,4 @@
 <?php
-// Gọi Model checkin và diary để tái sử dụng
 require_once PATH_MODEL . 'CheckinModel.php';
 require_once PATH_MODEL . 'TourDiaryModel.php';
 require_once PATH_MODEL . 'HdvAppModel.php';
@@ -145,7 +144,6 @@ class HdvAppController
 
             // Lưu thay đổi nhật ký vào CSDL
             $diaryModel->saveDiaries($booking_id, $diaries, $deleted_ids);
-            // Load lại trang viết nhật ký sau khi lưu
             header("Location: index.php?action=diary_manage&booking_id=$booking_id");
             exit;
         }
