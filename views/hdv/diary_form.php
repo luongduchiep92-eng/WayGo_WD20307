@@ -1,5 +1,4 @@
 <?php include PATH_VIEW . 'layouts/header_hdv.php';
-// Lấy dữ liệu truyền vào
 $maxDays = $data['max_days'] ?? 1;
 $bookingInfo = $data;
 $diaryList = $data['diaries'] ?? [];
